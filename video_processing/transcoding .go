@@ -1,4 +1,4 @@
-package detail
+package video_processing
 
 import (
 	"embed"
@@ -47,12 +47,11 @@ func Transcoding(videoName string) {
 	// 定义要处理的文件目录和输出的MP4文件名
 	inputDir := "./download_cache"
 	outputFile := "Output.mp4"
-	//outputFile := fmt.Sprintf("%s.mp4", videoName)
 
 	// 获取所有的cache文件
 	caches, err := filepath.Glob(filepath.Join(inputDir, "*"))
 	if err != nil {
-		fmt.Println("Error finding M4S files:", err)
+		fmt.Println("Error finding Cache files:", err)
 		return
 	}
 
@@ -68,7 +67,7 @@ func Transcoding(videoName string) {
 		fileListContent += fmt.Sprintf("file '%s'\n", file)
 	}
 
-	err = ioutil.WriteFile(fileList, []byte(fileListContent), 0644)
+	err = os.WriteFile(fileList, []byte(fileListContent), 0644)
 	if err != nil {
 		fmt.Println("Error creating file list:", err)
 		return
@@ -89,5 +88,5 @@ func Transcoding(videoName string) {
 		return
 	}
 
-	fmt.Println("Output MP4 file successfully.")
+	fmt.Println("\n视频文件转码成功！")
 }

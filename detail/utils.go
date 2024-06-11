@@ -4,8 +4,9 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
+	"os/exec"
 	"path/filepath"
-	"strings"
+	"runtime"
 )
 
 // ProcessResponse 处理 JSON 响应并返回 Response 结构体
@@ -44,14 +45,17 @@ func CheckAndCreateCacheDir() error {
 	// 检查目录是否存在
 	if _, err := os.Stat(cacheDirPath); os.IsNotExist(err) {
 		// 目录不存在，创建目录
-		err = os.Mkdir(cacheDirPath, 0755)
+		err = os.MkdirAll(cacheDirPath, 0755)
 		if err != nil {
 			return fmt.Errorf("临时下载目录创建失败: %v", err)
 		}
-		fmt.Println("成功创建目录:", cacheDirPath)
+		fmt.Println("成功创建缓存目录:", cacheDirPath)
+	} else if err != nil {
+		// 如果 os.Stat 返回了错误，但不是 os.IsNotExist
+		return fmt.Errorf("检查目录时发生错误: %v", err)
 	} else {
-		// 目录存在，报错
-		return fmt.Errorf("目录 '%s' 已经存在", cacheDirPath)
+		// 目录存在
+		fmt.Println("缓存目录已经存在:", cacheDirPath)
 	}
 
 	return nil
@@ -73,7 +77,7 @@ func RemoveCacheDir() error {
 	return nil
 }
 
-// renameFile 修改文件名（不包含扩展名）
+/*// renameFile 修改文件名（不包含扩展名）
 func RenameFile(filepath, newName string) (string, error) {
 	// 分离文件名和扩展名
 	dir := filepath.Dir(filepath)
@@ -89,4 +93,19 @@ func RenameFile(filepath, newName string) (string, error) {
 		return "", err
 	}
 	return newFilepath, nil
+}*/
+
+func ClearScreen() {
+	switch runtime.GOOS {
+	case "windows":
+		cmd := exec.Command("cmd", "/c", "cls")
+		cmd.Stdout = os.Stdout
+		cmd.Run()
+	case "linux", "darwin":
+		cmd := exec.Command("clear")
+		cmd.Stdout = os.Stdout
+		cmd.Run()
+	default:
+		fmt.Println("Unable to clear terminal screen; unsupported platform.")
+	}
 }

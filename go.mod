@@ -1,4 +1,4 @@
-module aBlibliTop
+module Bilibili_Downloader
 
 go 1.21
 
