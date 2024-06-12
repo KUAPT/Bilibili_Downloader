@@ -77,24 +77,6 @@ func RemoveCacheDir() error {
 	return nil
 }
 
-/*// renameFile 修改文件名（不包含扩展名）
-func RenameFile(filepath, newName string) (string, error) {
-	// 分离文件名和扩展名
-	dir := filepath.Dir(filepath)
-	ext := filepath.Ext(filepath)
-	oldName := strings.TrimSuffix(filepath.Base(filepath), ext)
-
-	// 生成新的文件路径
-	newFilepath := filepath.Join(dir, newName+ext)
-
-	// 重命名文件
-	err := os.Rename(filepath, newFilepath)
-	if err != nil {
-		return "", err
-	}
-	return newFilepath, nil
-}*/
-
 func ClearScreen() {
 	switch runtime.GOOS {
 	case "windows":

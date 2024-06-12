@@ -3,7 +3,6 @@ package video_processing
 import (
 	"embed"
 	"fmt"
-	"io/ioutil"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -20,14 +19,14 @@ func extractFFmpeg() (string, error) {
 	}
 
 	// 创建临时目录
-	tempDir, err := ioutil.TempDir("", "ffmpeg")
+	tempDir, err := os.MkdirTemp("", "ffmpeg")
 	if err != nil {
 		return "", err
 	}
 
 	// 写入ffmpeg二进制文件
 	ffmpegPath := filepath.Join(tempDir, "ffmpeg.exe")
-	err = ioutil.WriteFile(ffmpegPath, data, 0644)
+	err = os.WriteFile(ffmpegPath, data, 0644)
 	if err != nil {
 		return "", err
 	}
