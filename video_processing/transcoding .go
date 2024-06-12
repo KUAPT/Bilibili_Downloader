@@ -45,7 +45,7 @@ func Transcoding(videoName string) {
 
 	// 定义要处理的文件目录和输出的MP4文件名
 	inputDir := "./download_cache"
-	outputFile := "Output.mp4"
+	outputFile := fmt.Sprintf("%s.mp4", videoName)
 
 	// 获取所有的cache文件
 	caches, err := filepath.Glob(filepath.Join(inputDir, "*"))
