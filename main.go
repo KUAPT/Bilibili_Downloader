@@ -14,19 +14,34 @@ func main() {
 	defer func() {
 		if err := detail.RemoveCacheDir(); err != nil {
 			fmt.Println("缓存目录清理失败，确认需清理时可手动清理或重新运行程序.")
+			log.Println("缓存目录清理失败:", err)
 		}
 	}()
+
+	logFile, err := os.OpenFile("detail.log", os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0666)
+	if err != nil {
+		log.Fatalf("无法打开日志文件: %v", err)
+	}
+	defer logFile.Close()
+	// 将日志输出设置到文件
+	log.SetOutput(logFile)
+	// 设置日志前缀和格式
+	log.SetFlags(log.Ldate | log.Ltime | log.Lshortfile)
+	log.Println("程序运行，开始日志记录")
 
 	cookie, flag := detail.LoadConfig()
 	if flag != 0 {
 		fmt.Println("配置加载错误，请检查config目录下json文件是否存在或格式是否正确！")
+		log.Println("配置文件加载错误！")
 		return
 	}
 	fmt.Println("配置文件加载成功！")
 	if len(cookie) >= 10 {
 		fmt.Printf("当前使用的Cookie为（前十个字符）：%v\n", cookie[:10])
+		log.Printf("Cookie载入正常，当前使用的Cookie为（前十个字符）：%v\n", cookie[:10])
 	} else {
 		fmt.Println("cookie已成功加载，但可能存在问题，请检查填写是否正确（确认无误可忽略此警告）")
+		log.Printf("Cookie载入正常，但值可能不正确？")
 	}
 
 	//正则对BV号进行基本检查
@@ -57,17 +72,13 @@ func main() {
 		return
 	}
 
-	// 打印原始数据以进行调试
-	//fmt.Printf("原始数据: %s\n", data)
-
 	// 处理数据
 	Response, err := detail.ProcessResponse(data, 0)
 	if err != nil {
-		log.Fatalf("处理视频信息响应错误: %v\n", err)
+		log.Fatalf("视频信息处理发生错误: %v\n", err)
 		return
 	}
 	videoInfoResponse := Response.(*detail.VideoInfoResponse)
-	//fmt.Printf("视频信息解组后的数据：%v\n", videoInfoResponse)
 
 	DownloadURL := fmt.Sprintf("https://api.bilibili.com/x/player/wbi/playurl?bvid=%s&cid=%d", videoInfoResponse.Data.Bvid, videoInfoResponse.Data.Cid)
 
@@ -76,19 +87,17 @@ func main() {
 		log.Fatalf("获取下载信息数据错误: %v\n", err)
 		return
 	}
-	//fmt.Printf("原始数据: %s\n\n\n\n\n", data)
 
 	newResponse, err := detail.ProcessResponse(data, 1)
 	if err != nil {
-		log.Fatalf("下载信息处理响应错误: %v\n", err)
+		log.Fatalf("下载信息处理发生错误: %v\n", err)
 		return
 	}
 
 	downloadInfoResponse := newResponse.(*detail.DownloadInfoResponse)
-	//fmt.Printf("下载信息解组后的数据：%v\n", downloadInfoResponse)
 
 	if err := detail.DownloadFile(downloadInfoResponse.Data.Durl[0].URL, "", cookie); err != nil {
-		fmt.Printf("请求下载失败：%s\n", err)
+		log.Printf("请求下载失败：%s\n", err)
 	}
 
 	fmt.Println("开始视频转码：\n")
@@ -99,4 +108,5 @@ func main() {
 	reader := bufio.NewReader(os.Stdin)
 	// 读取一个字符
 	_, _ = reader.ReadString('\n')
+	log.Println("程序执行完毕，正常退出")
 }

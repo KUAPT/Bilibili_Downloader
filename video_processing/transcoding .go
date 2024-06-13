@@ -3,6 +3,7 @@ package video_processing
 import (
 	"embed"
 	"fmt"
+	"log"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -38,24 +39,24 @@ func Transcoding(videoName string) {
 	// 提取ffmpeg
 	ffmpegPath, err := extractFFmpeg()
 	if err != nil {
-		fmt.Println("Error extracting ffmpeg:", err)
+		log.Println("ffmpeg释放错误:", err)
 		return
 	}
 	defer os.RemoveAll(filepath.Dir(ffmpegPath))
 
 	// 定义要处理的文件目录和输出的MP4文件名
 	inputDir := "./download_cache"
-	outputFile := fmt.Sprintf("%s.mp4", videoName)
+	outputFile := fmt.Sprintf("./Download/%s.mp4", videoName)
 
 	// 获取所有的cache文件
 	caches, err := filepath.Glob(filepath.Join(inputDir, "*"))
 	if err != nil {
-		fmt.Println("Error finding Cache files:", err)
+		log.Println("查找Cache文件出错:", err)
 		return
 	}
 
 	if len(caches) == 0 {
-		fmt.Println("No cache files found")
+		log.Println("未找到缓存文件")
 		return
 	}
 
@@ -68,7 +69,7 @@ func Transcoding(videoName string) {
 
 	err = os.WriteFile(fileList, []byte(fileListContent), 0644)
 	if err != nil {
-		fmt.Println("Error creating file list:", err)
+		log.Println("创建文件列表失败", err)
 		return
 	}
 	defer os.Remove(fileList)
@@ -83,9 +84,10 @@ func Transcoding(videoName string) {
 	// 运行ffmpeg命令
 	err = cmd.Run()
 	if err != nil {
-		fmt.Println("Error running ffmpeg:", err)
+		log.Println("ffmpeg运行失败:", err)
 		return
 	}
 
 	fmt.Println("\n视频文件转码成功！")
+	log.Println("视频文件转码成功")
 }

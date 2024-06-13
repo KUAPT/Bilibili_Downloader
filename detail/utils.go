@@ -3,6 +3,7 @@ package detail
 import (
 	"encoding/json"
 	"fmt"
+	"log"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -16,21 +17,22 @@ func ProcessResponse(data []byte, flag int) (interface{}, error) {
 		var response VideoInfoResponse
 		err = json.Unmarshal(data, &response)
 		if err != nil {
-			return nil, fmt.Errorf("JSON 解组失败: %w", err)
+			return nil, fmt.Errorf("视频信息解组失败: %w", err)
 		}
-		fmt.Println("数据解组正常！")
+		fmt.Println("视频信息数据解组正常！")
+		log.Println("视频信息数据解组正常")
 		return &response, nil
 	} else if flag == 1 {
 		var response DownloadInfoResponse
 		err = json.Unmarshal(data, &response)
 		if err != nil {
-			return nil, fmt.Errorf("JSON 解组失败: %w", err)
+			return nil, fmt.Errorf("下载信息解组失败: %w", err)
 		}
-		fmt.Println("数据解组正常！")
+		fmt.Println("下载信息数据解组正常！")
+		log.Println("下载信息数据解组正常")
 		return &response, nil
 	}
 	return nil, fmt.Errorf("不支持的 flag 值: %d", flag)
-	//fmt.Printf("解组后的数据：%v", response)
 }
 
 func CheckAndCreateCacheDir() error {
@@ -50,12 +52,14 @@ func CheckAndCreateCacheDir() error {
 			return fmt.Errorf("临时下载目录创建失败: %v", err)
 		}
 		fmt.Println("成功创建缓存目录:", cacheDirPath)
+		log.Println("建立缓存目录正常:", cacheDirPath)
 	} else if err != nil {
 		// 如果 os.Stat 返回了错误，但不是 os.IsNotExist
 		return fmt.Errorf("检查目录时发生错误: %v", err)
 	} else {
 		// 目录存在
-		fmt.Println("缓存目录已经存在:", cacheDirPath)
+		fmt.Println("缓存目录已经存在，继续使用:", cacheDirPath)
+		log.Println("缓存目录已经存在，继续使用:", cacheDirPath)
 	}
 
 	return nil
@@ -74,6 +78,7 @@ func RemoveCacheDir() error {
 	}
 
 	fmt.Println("成功移除cache目录:", cacheDirPath)
+	log.Println("成功移除cache目录:", cacheDirPath)
 	return nil
 }
 
@@ -88,6 +93,6 @@ func ClearScreen() {
 		cmd.Stdout = os.Stdout
 		cmd.Run()
 	default:
-		fmt.Println("Unable to clear terminal screen; unsupported platform.")
+		log.Println("无法清屏，不支持的平台！")
 	}
 }

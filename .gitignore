@@ -8,6 +8,8 @@
 *.so
 *.dylib
 *.mp4
+*.json
+*.log
 
 # Test binary, built with `go test -c`
 *.test

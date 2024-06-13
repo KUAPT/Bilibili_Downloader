@@ -3,6 +3,7 @@ package detail
 import (
 	"fmt"
 	"io"
+	"log"
 	"net/http"
 	"os"
 )
@@ -75,6 +76,9 @@ func DownloadFile(url string, filepath string, Cookie string) error {
 		return fmt.Errorf("bad status: %s", resp.Status)
 	}
 
+	fmt.Println("正在下载，请耐心等待...")
+	log.Println("视频下载开始")
+
 	// 创建文件
 	out, err := os.Create(filepath)
 	if err != nil {
@@ -88,5 +92,7 @@ func DownloadFile(url string, filepath string, Cookie string) error {
 		return err
 	}
 
+	fmt.Println("下载完成！")
+	log.Println("视频下载成功")
 	return nil
 }
