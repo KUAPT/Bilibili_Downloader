@@ -2,6 +2,8 @@ package main
 
 import (
 	"Bilibili_Downloader/detail"
+	"Bilibili_Downloader/httpclient"
+	"Bilibili_Downloader/sso"
 	"Bilibili_Downloader/video_processing"
 	"bufio"
 	"fmt"
@@ -28,6 +30,14 @@ func main() {
 	// 设置日志前缀和格式
 	log.SetFlags(log.Ldate | log.Ltime | log.Lshortfile)
 	log.Println("程序运行，开始日志记录")
+
+	if success := httpclient.Init(); !success {
+		err := sso.HandleQRCodeLogin()
+		if err != nil {
+			fmt.Println("处理二维码登录失败:", err)
+			os.Exit(1)
+		}
+	}
 
 	cookie, flag := detail.LoadConfig()
 	if flag != 0 {

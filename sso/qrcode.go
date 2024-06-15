@@ -1,0 +1,30 @@
+package sso
+
+import (
+	"fmt"
+	"github.com/skip2/go-qrcode"
+)
+
+/*// DisplayQRCodeInTerminal 在终端显示二维码
+func DisplayQRCodeInTerminal(url string) error {
+	// 设置二维码配置
+	qr := qrcodeTerminal.New2(qrcodeTerminal.ConsoleColors.BrightBlack, qrcodeTerminal.ConsoleColors.BrightWhite, qrcodeTerminal.QRCodeRecoveryLevels.Low)
+	qr.Get(url).Print()
+	return nil
+}*/
+
+// DisplayQRCodeInTerminal 在终端显示二维码
+func DisplayQRCodeInTerminal(url string) error {
+	// 生成二维码
+	qr, err := qrcode.New(url, qrcode.Low)
+	if err != nil {
+		panic(err)
+	}
+
+	// 将二维码转换为 ASCII 字符
+	ascii := qr.ToSmallString(false)
+
+	// 输出二维码
+	fmt.Println(ascii)
+	return nil
+}

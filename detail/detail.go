@@ -1,6 +1,7 @@
 package detail
 
 import (
+	"Bilibili_Downloader/httpclient"
 	"fmt"
 	"io"
 	"log"
@@ -10,7 +11,8 @@ import (
 
 func CatchData(Url string, Cookie string) ([]byte, error) {
 
-	client := &http.Client{}
+	//client := &http.Client{}
+	client := httpclient.GetClient()
 	req, err := http.NewRequest("GET", Url, nil)
 	if err != nil {
 		return nil, err
@@ -22,7 +24,7 @@ func CatchData(Url string, Cookie string) ([]byte, error) {
 	req.Header.Set("Connection", "keep-alive")
 	req.Header.Set("Referer", "https://www.bilibili.com/")
 	req.Header.Set("Origin", "https://www.bilibili.com/")
-	req.Header.Set("Cookie", Cookie)
+	//req.Header.Set("Cookie", Cookie)
 
 	resp, err := client.Do(req)
 	if err != nil {
@@ -51,7 +53,8 @@ func DownloadFile(url string, filepath string, Cookie string) error {
 		filepath = "./download_cache/video_cache.mp4"
 	}
 
-	client := &http.Client{}
+	//client := &http.Client{}
+	client := httpclient.GetClient()
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
 		return err
@@ -63,7 +66,7 @@ func DownloadFile(url string, filepath string, Cookie string) error {
 	req.Header.Set("Connection", "keep-alive")
 	req.Header.Set("Referer", "https://www.bilibili.com/")
 	req.Header.Set("Origin", "https://www.bilibili.com/")
-	req.Header.Set("Cookie", Cookie)
+	//req.Header.Set("Cookie", Cookie)
 
 	resp, err := client.Do(req)
 	if err != nil {
