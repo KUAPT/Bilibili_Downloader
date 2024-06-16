@@ -64,22 +64,8 @@ func Transcoding(videoName string) {
 		return
 	}
 
-	// 创建文件列表
-	fileList := "filelist.txt"
-	fileListContent := ""
-	for _, file := range caches {
-		fileListContent += fmt.Sprintf("file '%s'\n", file)
-	}
-
-	err = os.WriteFile(fileList, []byte(fileListContent), 0644)
-	if err != nil {
-		log.Println("创建文件列表失败", err)
-		return
-	}
-	defer os.Remove(fileList)
-
 	// 创建ffmpeg命令
-	cmd := exec.Command(ffmpegPath, "-f", "concat", "-safe", "0", "-i", fileList, "-c", "copy", outputFile)
+	cmd := exec.Command(ffmpegPath, "-f", "mp4", "-i", caches[0], "-i", caches[1], "-c:a", "copy", "-c:v", "copy", outputFile)
 
 	// 将输出重定向到标准输出和标准错误
 	cmd.Stdout = os.Stdout

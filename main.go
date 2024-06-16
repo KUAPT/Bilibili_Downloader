@@ -76,7 +76,7 @@ func main() {
 	}
 	videoInfoResponse := Response.(*detail.VideoInfoResponse)
 
-	DownloadURL := fmt.Sprintf("https://api.bilibili.com/x/player/wbi/playurl?bvid=%s&cid=%d", videoInfoResponse.Data.Bvid, videoInfoResponse.Data.Cid)
+	DownloadURL := fmt.Sprintf("https://api.bilibili.com/x/player/wbi/playurl?bvid=%s&cid=%d&fnval=80", videoInfoResponse.Data.Bvid, videoInfoResponse.Data.Cid)
 
 	data, err = detail.CatchData(DownloadURL)
 	if err != nil {
@@ -92,7 +92,7 @@ func main() {
 
 	downloadInfoResponse := newResponse.(*detail.DownloadInfoResponse)
 
-	if err := detail.DownloadFile(downloadInfoResponse.Data.Durl[0].URL, ""); err != nil {
+	if err := detail.DownloadFile(downloadInfoResponse.Data.Dash.Video[0].BaseURL, downloadInfoResponse.Data.Dash.Audio[0].BaseUrl, ""); err != nil {
 		log.Printf("请求下载失败：%s\n", err)
 	}
 
