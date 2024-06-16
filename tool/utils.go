@@ -1,7 +1,6 @@
-package detail
+package tool
 
 import (
-	"encoding/json"
 	"fmt"
 	"log"
 	"os"
@@ -9,31 +8,6 @@ import (
 	"path/filepath"
 	"runtime"
 )
-
-// ProcessResponse 处理 JSON 响应并返回 Response 结构体
-func ProcessResponse(data []byte, flag int) (interface{}, error) {
-	var err error
-	if flag == 0 {
-		var response VideoInfoResponse
-		err = json.Unmarshal(data, &response)
-		if err != nil {
-			return nil, fmt.Errorf("视频信息解组失败: %w", err)
-		}
-		fmt.Println("视频信息数据解组正常！")
-		log.Println("视频信息数据解组正常")
-		return &response, nil
-	} else if flag == 1 {
-		var response DownloadInfoResponse
-		err = json.Unmarshal(data, &response)
-		if err != nil {
-			return nil, fmt.Errorf("下载信息解组失败: %w", err)
-		}
-		fmt.Println("下载信息数据解组正常！")
-		log.Println("下载信息数据解组正常")
-		return &response, nil
-	}
-	return nil, fmt.Errorf("不支持的 flag 值: %d", flag)
-}
 
 func CheckAndCreateCacheDir() error {
 	// 获取当前工作目录
@@ -95,4 +69,25 @@ func ClearScreen() {
 	default:
 		log.Println("无法清屏，不支持的平台！")
 	}
+}
+
+func CheckAndCreateDir(dir string) error {
+	configDir := dir
+
+	// 检查目录是否存在
+	if _, err := os.Stat(configDir); os.IsNotExist(err) {
+		// 目录不存在，创建目录
+		err := os.Mkdir(configDir, 0755)
+		if err != nil {
+			return fmt.Errorf("无法创建目录 %s: %v", configDir, err)
+		}
+		fmt.Println("目录已创建:", configDir)
+	} else if err != nil {
+		// 其他错误
+		return fmt.Errorf("检查目录 %s 时出错: %v", configDir, err)
+	} else {
+		// 目录已存在
+		fmt.Println("目录已存在:", configDir)
+	}
+	return nil
 }

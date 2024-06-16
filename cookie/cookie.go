@@ -1,14 +1,19 @@
 package cookie
 
 import (
+	"Bilibili_Downloader/tool"
 	"encoding/json"
 	"fmt"
+	"log"
 	"net/http"
 	"os"
 )
 
 // 存储Cookie
 func StoreCookies(cookies []*http.Cookie) {
+	if err := tool.CheckAndCreateDir("./config"); err != nil {
+		log.Println("视频输出目录检查或创建失败：", err)
+	}
 	// 创建一个临时文件来存储 cookies
 	file, err := os.Create("./config/cookies.json")
 	if err != nil {

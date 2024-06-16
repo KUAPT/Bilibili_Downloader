@@ -1,6 +1,7 @@
 package video_processing
 
 import (
+	"Bilibili_Downloader/tool"
 	"embed"
 	"fmt"
 	"log"
@@ -46,6 +47,9 @@ func Transcoding(videoName string) {
 
 	// 定义要处理的文件目录和输出的MP4文件名
 	inputDir := "./download_cache"
+	if err := tool.CheckAndCreateDir("./Download"); err != nil {
+		log.Println("视频输出目录检查或创建失败：", err)
+	}
 	outputFile := fmt.Sprintf("./Download/%s.mp4", videoName)
 
 	// 获取所有的cache文件
@@ -83,6 +87,7 @@ func Transcoding(videoName string) {
 
 	// 运行ffmpeg命令
 	err = cmd.Run()
+	tool.ClearScreen()
 	if err != nil {
 		log.Println("ffmpeg运行失败:", err)
 		return

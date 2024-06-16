@@ -4,6 +4,7 @@ import (
 	"Bilibili_Downloader/detail"
 	"Bilibili_Downloader/httpclient"
 	"Bilibili_Downloader/sso"
+	"Bilibili_Downloader/tool"
 	"Bilibili_Downloader/video_processing"
 	"bufio"
 	"fmt"
@@ -14,7 +15,7 @@ import (
 
 func main() {
 	defer func() {
-		if err := detail.RemoveCacheDir(); err != nil {
+		if err := tool.RemoveCacheDir(); err != nil {
 			fmt.Println("缓存目录清理失败，确认需清理时可手动清理或重新运行程序.")
 			log.Println("缓存目录清理失败:", err)
 		}
@@ -46,7 +47,7 @@ func main() {
 	for {
 		fmt.Printf("请输入你需要下载视频的BV号：")
 		if _, err := fmt.Scanln(&BV_id); err != nil {
-			detail.ClearScreen()
+			tool.ClearScreen()
 			fmt.Println("输入读取错误，请重试！")
 			continue
 		}
@@ -54,7 +55,7 @@ func main() {
 		if cheak.MatchString(BV_id) {
 			break
 		} else {
-			detail.ClearScreen()
+			tool.ClearScreen()
 			fmt.Println("BV号输入错误，请重试！")
 		}
 	}

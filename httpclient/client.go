@@ -29,13 +29,6 @@ func Init() bool {
 
 			// 使用 client 进行操作
 		} else {
-			/*// 如果没有 cookies，处理二维码登录流程
-			err := sso.HandleQRCodeLogin()
-			if err != nil {
-				fmt.Println("处理二维码登录失败:", err)
-				os.Exit(1)
-			}
-			*/
 			success = false
 		}
 	})

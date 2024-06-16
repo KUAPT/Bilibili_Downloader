@@ -2,6 +2,8 @@ package detail
 
 import (
 	"Bilibili_Downloader/httpclient"
+	"Bilibili_Downloader/tool"
+	"encoding/json"
 	"fmt"
 	"io"
 	"log"
@@ -24,7 +26,6 @@ func CatchData(Url string) ([]byte, error) {
 	req.Header.Set("Connection", "keep-alive")
 	req.Header.Set("Referer", "https://www.bilibili.com/")
 	req.Header.Set("Origin", "https://www.bilibili.com/")
-	//req.Header.Set("Cookie", Cookie)
 
 	resp, err := client.Do(req)
 	if err != nil {
@@ -47,7 +48,7 @@ func CatchData(Url string) ([]byte, error) {
 
 func DownloadFile(url string, filepath string) error {
 	if filepath == "" {
-		if err := CheckAndCreateCacheDir(); err != nil {
+		if err := tool.CheckAndCreateCacheDir(); err != nil {
 			fmt.Println("检查并创建临时下载目录失败")
 		}
 		filepath = "./download_cache/video_cache.mp4"
@@ -66,7 +67,6 @@ func DownloadFile(url string, filepath string) error {
 	req.Header.Set("Connection", "keep-alive")
 	req.Header.Set("Referer", "https://www.bilibili.com/")
 	req.Header.Set("Origin", "https://www.bilibili.com/")
-	//req.Header.Set("Cookie", Cookie)
 
 	resp, err := client.Do(req)
 	if err != nil {
@@ -95,7 +95,33 @@ func DownloadFile(url string, filepath string) error {
 		return err
 	}
 
+	tool.ClearScreen()
 	fmt.Println("下载完成！")
 	log.Println("视频下载成功")
 	return nil
+}
+
+// ProcessResponse 处理 JSON 响应并返回 Response 结构体
+func ProcessResponse(data []byte, flag int) (interface{}, error) {
+	var err error
+	if flag == 0 {
+		var response VideoInfoResponse
+		err = json.Unmarshal(data, &response)
+		if err != nil {
+			return nil, fmt.Errorf("视频信息解组失败: %w", err)
+		}
+		fmt.Println("视频信息数据解组正常！")
+		log.Println("视频信息数据解组正常")
+		return &response, nil
+	} else if flag == 1 {
+		var response DownloadInfoResponse
+		err = json.Unmarshal(data, &response)
+		if err != nil {
+			return nil, fmt.Errorf("下载信息解组失败: %w", err)
+		}
+		fmt.Println("下载信息数据解组正常！")
+		log.Println("下载信息数据解组正常")
+		return &response, nil
+	}
+	return nil, fmt.Errorf("不支持的 flag 值: %d", flag)
 }

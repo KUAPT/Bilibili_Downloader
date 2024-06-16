@@ -5,14 +5,6 @@ import (
 	"github.com/skip2/go-qrcode"
 )
 
-/*// DisplayQRCodeInTerminal 在终端显示二维码
-func DisplayQRCodeInTerminal(url string) error {
-	// 设置二维码配置
-	qr := qrcodeTerminal.New2(qrcodeTerminal.ConsoleColors.BrightBlack, qrcodeTerminal.ConsoleColors.BrightWhite, qrcodeTerminal.QRCodeRecoveryLevels.Low)
-	qr.Get(url).Print()
-	return nil
-}*/
-
 // DisplayQRCodeInTerminal 在终端显示二维码
 func DisplayQRCodeInTerminal(url string) error {
 	// 生成二维码
