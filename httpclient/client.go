@@ -4,6 +4,7 @@ import (
 	"Bilibili_Downloader/cookie"
 	"net/http"
 	"net/http/cookiejar"
+	"net/url"
 	"sync"
 )
 
@@ -20,7 +21,8 @@ func Init() bool {
 		if cookies != nil {
 			// 创建一个 cookie jar 并设置 cookies
 			jar, _ := cookiejar.New(nil)
-			jar.SetCookies(nil, cookies)
+			URL, _ := url.Parse("https://api.bilibili.com/")
+			jar.SetCookies(URL, cookies)
 
 			// 使用带有 cookies 的 http.Client
 			client = &http.Client{Jar: jar}

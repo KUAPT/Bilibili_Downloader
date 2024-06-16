@@ -39,21 +39,6 @@ func main() {
 		}
 	}
 
-	cookie, flag := detail.LoadConfig()
-	if flag != 0 {
-		fmt.Println("配置加载错误，请检查config目录下json文件是否存在或格式是否正确！")
-		log.Println("配置文件加载错误！")
-		return
-	}
-	fmt.Println("配置文件加载成功！")
-	if len(cookie) >= 10 {
-		fmt.Printf("当前使用的Cookie为（前十个字符）：%v\n", cookie[:10])
-		log.Printf("Cookie载入正常，当前使用的Cookie为（前十个字符）：%v\n", cookie[:10])
-	} else {
-		fmt.Println("cookie已成功加载，但可能存在问题，请检查填写是否正确（确认无误可忽略此警告）")
-		log.Printf("Cookie载入正常，但值可能不正确？")
-	}
-
 	//正则对BV号进行基本检查
 	BVcheak := `^BV[1-9A-HJ-NP-Za-km-z]{10}$`
 	cheak, err := regexp.Compile(BVcheak)
@@ -76,7 +61,7 @@ func main() {
 	VideoInfoUrl := fmt.Sprintf("https://api.bilibili.com/x/web-interface/view?bvid=%s", BV_id)
 
 	// 获取数据
-	data, err := detail.CatchData(VideoInfoUrl, cookie)
+	data, err := detail.CatchData(VideoInfoUrl)
 	if err != nil {
 		log.Fatalf("获取视频信息数据错误: %v\n", err)
 		return
@@ -92,7 +77,7 @@ func main() {
 
 	DownloadURL := fmt.Sprintf("https://api.bilibili.com/x/player/wbi/playurl?bvid=%s&cid=%d", videoInfoResponse.Data.Bvid, videoInfoResponse.Data.Cid)
 
-	data, err = detail.CatchData(DownloadURL, cookie)
+	data, err = detail.CatchData(DownloadURL)
 	if err != nil {
 		log.Fatalf("获取下载信息数据错误: %v\n", err)
 		return
@@ -106,7 +91,7 @@ func main() {
 
 	downloadInfoResponse := newResponse.(*detail.DownloadInfoResponse)
 
-	if err := detail.DownloadFile(downloadInfoResponse.Data.Durl[0].URL, "", cookie); err != nil {
+	if err := detail.DownloadFile(downloadInfoResponse.Data.Durl[0].URL, ""); err != nil {
 		log.Printf("请求下载失败：%s\n", err)
 	}
 

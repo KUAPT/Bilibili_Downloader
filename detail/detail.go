@@ -9,7 +9,7 @@ import (
 	"os"
 )
 
-func CatchData(Url string, Cookie string) ([]byte, error) {
+func CatchData(Url string) ([]byte, error) {
 
 	//client := &http.Client{}
 	client := httpclient.GetClient()
@@ -45,7 +45,7 @@ func CatchData(Url string, Cookie string) ([]byte, error) {
 	return body, nil
 }
 
-func DownloadFile(url string, filepath string, Cookie string) error {
+func DownloadFile(url string, filepath string) error {
 	if filepath == "" {
 		if err := CheckAndCreateCacheDir(); err != nil {
 			fmt.Println("检查并创建临时下载目录失败")

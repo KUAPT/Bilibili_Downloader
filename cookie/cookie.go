@@ -3,7 +3,6 @@ package cookie
 import (
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"net/http"
 	"os"
 )
@@ -11,7 +10,7 @@ import (
 // 存储Cookie
 func StoreCookies(cookies []*http.Cookie) {
 	// 创建一个临时文件来存储 cookies
-	file, err := os.CreateTemp("", "cookies*.json")
+	file, err := os.Create("./config/cookies.json")
 	if err != nil {
 		fmt.Println("创建临时文件失败:", err)
 		return
@@ -26,7 +25,7 @@ func StoreCookies(cookies []*http.Cookie) {
 	}
 
 	// 将 JSON 写入文件
-	if err := ioutil.WriteFile(file.Name(), cookiesJSON, 0644); err != nil {
+	if err := os.WriteFile(file.Name(), cookiesJSON, 0644); err != nil {
 		fmt.Println("写入 cookies 文件失败:", err)
 		return
 	}
@@ -37,9 +36,9 @@ func StoreCookies(cookies []*http.Cookie) {
 // 加载之前保存的 cookies
 func LoadCookies() []*http.Cookie {
 	// 读取之前保存的 cookies 文件
-	content, err := ioutil.ReadFile("path/to/cookies.json")
+	content, err := os.ReadFile("./config/cookies.json")
 	if err != nil {
-		fmt.Println("读取 cookies 文件失败:", err)
+		fmt.Println("未成功加载已保存的配置文件:", err)
 		return nil
 	}
 
@@ -49,6 +48,7 @@ func LoadCookies() []*http.Cookie {
 		fmt.Println("解析 cookies 失败:", err)
 		return nil
 	}
+	fmt.Println("Cookie加载成功，前十个字符为：", cookies[0].Value[:10])
 
 	return cookies
 }
