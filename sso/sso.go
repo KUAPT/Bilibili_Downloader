@@ -14,7 +14,23 @@ import (
 
 // RequestQRCode 请求并获取二维码信息
 func RequestQRCode(client *http.Client) (string, string, error) {
-	resp, err := client.Get("https://passport.bilibili.com/x/passport-login/web/qrcode/generate")
+	/*resp, err := client.Get("https://passport.bilibili.com/x/passport-login/web/qrcode/generate")
+	if err != nil {
+		return "", "", err
+	}
+	defer resp.Body.Close()*/
+
+	req, err := http.NewRequest("GET", "https://passport.bilibili.com/x/passport-login/web/qrcode/generate", nil)
+	if err != nil {
+		return "", "", err
+	}
+	// 设置自定义请求头
+	req.Header.Set("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36 Edg/126.0.0.0")
+	req.Header.Set("Accept", "*/*")
+	req.Header.Set("Connection", "keep-alive")
+	req.Header.Set("Referer", "https://www.bilibili.com/")
+	req.Header.Set("Origin", "https://www.bilibili.com/")
+	resp, err := client.Do(req)
 	if err != nil {
 		return "", "", err
 	}
