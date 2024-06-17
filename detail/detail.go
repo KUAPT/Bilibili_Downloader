@@ -9,8 +9,6 @@ import (
 	"log"
 	"net/http"
 	"os"
-	"path"
-	"regexp"
 	"strings"
 )
 
@@ -52,7 +50,7 @@ func CatchData(Url string) ([]byte, error) {
 func DownloadFile(urlVideo string, urlAudio string, filepath string) error {
 	var filepath1, filepath2 string
 
-	// 使用正则表达式提取文件扩展名
+	/*// 使用正则表达式提取文件扩展名
 	re := regexp.MustCompile(`\.([a-zA-Z0-9]+)$`)
 	match1 := re.FindStringSubmatch(path.Base(urlVideo))
 	match2 := re.FindStringSubmatch(path.Base(urlAudio))
@@ -63,15 +61,15 @@ func DownloadFile(urlVideo string, urlAudio string, filepath string) error {
 	}
 	if len(match2) > 1 {
 		audioExtension = match2[1]
-	}
+	}*/
 
 	if filepath == "" {
 		if err := tool.CheckAndCreateCacheDir(); err != nil {
 			fmt.Println("检查并创建临时下载目录失败")
 		}
 		// 使用提取的文件名和扩展名创建缓存路径
-		filepath1 = "./download_cache/audio_cache" + audioExtension
-		filepath2 = "./download_cache/video.cache" + videoExtension
+		filepath1 = "./download_cache/audio_cache" //+ audioExtension
+		filepath2 = "./download_cache/video_cache" //+ videoExtension
 	} else {
 		// 检查字符串末尾是否已经有斜杠
 		if !strings.HasSuffix(filepath, "/") {
@@ -79,8 +77,8 @@ func DownloadFile(urlVideo string, urlAudio string, filepath string) error {
 			filepath += "/"
 		}
 		// 如果指定了文件路径，则在文件路径后添加适当的扩展名
-		filepath1 = filepath + "audio_cache" + audioExtension
-		filepath2 = filepath + "video.cache" + videoExtension
+		filepath1 = filepath + "audio_cache" //+ audioExtension
+		filepath2 = filepath + "video_cache" //+ videoExtension
 	}
 
 	//client := &http.Client{}
