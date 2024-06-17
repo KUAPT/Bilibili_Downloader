@@ -9,6 +9,9 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"path"
+	"regexp"
+	"strings"
 )
 
 func CatchData(Url string) ([]byte, error) {
@@ -48,22 +51,45 @@ func CatchData(Url string) ([]byte, error) {
 
 func DownloadFile(urlVideo string, urlAudio string, filepath string) error {
 	var filepath1, filepath2 string
+
+	// 使用正则表达式提取文件扩展名
+	re := regexp.MustCompile(`\.([a-zA-Z0-9]+)$`)
+	match1 := re.FindStringSubmatch(path.Base(urlVideo))
+	match2 := re.FindStringSubmatch(path.Base(urlAudio))
+	// 提取到的文件扩展名
+	var videoExtension, audioExtension string
+	if len(match1) > 1 {
+		videoExtension = match1[1]
+	}
+	if len(match2) > 1 {
+		audioExtension = match2[1]
+	}
+
 	if filepath == "" {
 		if err := tool.CheckAndCreateCacheDir(); err != nil {
 			fmt.Println("检查并创建临时下载目录失败")
 		}
-		filepath1 = "./download_cache/video_cache.mp4"
-		filepath2 = "./download_cache/audio_cache.m4a"
-
+		// 使用提取的文件名和扩展名创建缓存路径
+		filepath1 = "./download_cache/audio_cache" + audioExtension
+		filepath2 = "./download_cache/video.cache" + videoExtension
+	} else {
+		// 检查字符串末尾是否已经有斜杠
+		if !strings.HasSuffix(filepath, "/") {
+			// 如果没有，则在末尾添加斜杠
+			filepath += "/"
+		}
+		// 如果指定了文件路径，则在文件路径后添加适当的扩展名
+		filepath1 = filepath + "audio_cache" + audioExtension
+		filepath2 = filepath + "video.cache" + videoExtension
 	}
 
 	//client := &http.Client{}
 	client := httpclient.GetClient()
-	req1, err := http.NewRequest("GET", urlVideo, nil)
+	req1, err := http.NewRequest("GET", urlAudio, nil)
 	if err != nil {
 		return err
 	}
-	req2, err := http.NewRequest("GET", urlAudio, nil)
+	req2, err := http.NewRequest("GET", urlVideo, nil)
 	if err != nil {
 		return err
 	}
@@ -71,9 +97,15 @@ func DownloadFile(urlVideo string, urlAudio string, filepath string) error {
 	// 设置自定义请求头
 	req1.Header.Set("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36 Edg/126.0.0.0")
 	req1.Header.Set("Accept", "*/*")
-	req1.Header.Set("Connection", "keep-alive")
-	req1.Header.Set("Referer", "https://www.bilibili.com/")
-	req1.Header.Set("Origin", "https://www.bilibili.com/")
+	//req1.Header.Set("Connection", "keep-alive")
+	req1.Header.Set("Referer", "https://www.bilibili.com/vedio")
+	req1.Header.Set("Origin", "https://www.bilibili.com")
+	// 设置自定义请求头
+	req2.Header.Set("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36 Edg/126.0.0.0")
+	req2.Header.Set("Accept", "*/*")
+	//req2.Header.Set("Connection", "keep-alive")
+	req2.Header.Set("Referer", "https://www.bilibili.com/vedio")
+	req2.Header.Set("Origin", "https://www.bilibili.com")
 
 	resp1, err := client.Do(req1)
 	if err != nil {
@@ -85,12 +117,13 @@ func DownloadFile(urlVideo string, urlAudio string, filepath string) error {
 	}
 	defer resp1.Body.Close()
 
+	fmt.Println("发送下载请求")
 	// 检查HTTP响应状态码
 	if resp1.StatusCode != http.StatusOK {
-		return fmt.Errorf("bad status: %s", resp1.Status)
+		return fmt.Errorf("bad status of audio: %s", resp1.Status)
 	}
 	if resp2.StatusCode != http.StatusOK {
-		return fmt.Errorf("bad status: %s", resp2.Status)
+		return fmt.Errorf("bad status of video: %s", resp2.Status)
 	}
 
 	fmt.Println("正在下载，请耐心等待...")
