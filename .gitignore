@@ -10,6 +10,8 @@
 *.mp4
 *.json
 *.log
+*.rar
+*.zip
 
 # Test binary, built with `go test -c`
 *.test
@@ -18,7 +20,7 @@
 *.out
 
 # Dependency directories (remove the comment below to include it)
-# vendor/
+config/
 
 # Go workspace file
 go.work
