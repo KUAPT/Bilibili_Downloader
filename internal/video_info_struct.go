@@ -1,4 +1,4 @@
-package detail
+package internal
 
 type VideoInfoResponse struct {
 	Data VideoData `json:"data"`

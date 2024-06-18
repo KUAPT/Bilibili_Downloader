@@ -1,7 +1,7 @@
 package video_processing
 
 import (
-	"Bilibili_Downloader/tool"
+	"Bilibili_Downloader/internal/tool"
 	"embed"
 	"fmt"
 	"log"

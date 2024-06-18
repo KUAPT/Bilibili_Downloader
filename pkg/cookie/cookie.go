@@ -1,7 +1,7 @@
 package cookie
 
 import (
-	"Bilibili_Downloader/tool"
+	"Bilibili_Downloader/internal/tool"
 	"encoding/json"
 	"fmt"
 	"log"

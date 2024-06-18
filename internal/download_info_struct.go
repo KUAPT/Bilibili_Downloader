@@ -1,4 +1,4 @@
-package detail
+package internal
 
 type SegmentBase struct {
 	Initialization string `json:"Initialization"`

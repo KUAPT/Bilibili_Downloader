@@ -1,11 +1,11 @@
 package main
 
 import (
-	"Bilibili_Downloader/detail"
-	"Bilibili_Downloader/httpclient"
-	"Bilibili_Downloader/sso"
-	"Bilibili_Downloader/tool"
-	"Bilibili_Downloader/video_processing"
+	"Bilibili_Downloader/internal"
+	"Bilibili_Downloader/internal/sso"
+	"Bilibili_Downloader/internal/tool"
+	"Bilibili_Downloader/internal/video_processing"
+	"Bilibili_Downloader/pkg/httpclient"
 	"bufio"
 	"fmt"
 	"log"
@@ -21,7 +21,7 @@ func main() {
 		}
 	}()
 
-	logFile, err := os.OpenFile("detail.log", os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0666)
+	logFile, err := os.OpenFile("internal.log", os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0666)
 	if err != nil {
 		log.Fatalf("无法打开日志文件: %v", err)
 	}
@@ -62,37 +62,37 @@ func main() {
 	VideoInfoUrl := fmt.Sprintf("https://api.bilibili.com/x/web-interface/view?bvid=%s", BV_id)
 
 	// 获取数据
-	data, err := detail.CatchData(VideoInfoUrl)
+	data, err := internal.CatchData(VideoInfoUrl)
 	if err != nil {
 		log.Fatalf("获取视频信息数据错误: %v\n", err)
 		return
 	}
 
 	// 处理数据
-	Response, err := detail.ProcessResponse(data, 0)
+	Response, err := internal.ProcessResponse(data, 0)
 	if err != nil {
 		log.Fatalf("视频信息处理发生错误: %v\n", err)
 		return
 	}
-	videoInfoResponse := Response.(*detail.VideoInfoResponse)
+	videoInfoResponse := Response.(*internal.VideoInfoResponse)
 
 	DownloadURL := fmt.Sprintf("https://api.bilibili.com/x/player/wbi/playurl?bvid=%s&cid=%d&fnval=80&fnver=0&fourk=1&qn=0", videoInfoResponse.Data.Bvid, videoInfoResponse.Data.Cid)
 
-	data, err = detail.CatchData(DownloadURL)
+	data, err = internal.CatchData(DownloadURL)
 	if err != nil {
 		log.Fatalf("获取下载信息数据错误: %v\n", err)
 		return
 	}
 
-	newResponse, err := detail.ProcessResponse(data, 1)
+	newResponse, err := internal.ProcessResponse(data, 1)
 	if err != nil {
 		log.Fatalf("下载信息处理发生错误: %v\n", err)
 		return
 	}
 
-	downloadInfoResponse := newResponse.(*detail.DownloadInfoResponse)
+	downloadInfoResponse := newResponse.(*internal.DownloadInfoResponse)
 
-	if err := detail.DownloadFile(downloadInfoResponse.Data.Dash.Video[0].BackupURL[0], downloadInfoResponse.Data.Dash.Audio[0].BackupURL[0], ""); err != nil {
+	if err := internal.DownloadFile(downloadInfoResponse.Data.Dash.Video[0].BackupURL[0], downloadInfoResponse.Data.Dash.Audio[0].BackupURL[0], ""); err != nil {
 		log.Printf("请求下载失败：%s\n", err)
 	}
 

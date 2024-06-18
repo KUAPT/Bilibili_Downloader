@@ -1,8 +1,8 @@
-package detail
+package internal
 
 import (
-	"Bilibili_Downloader/httpclient"
-	"Bilibili_Downloader/tool"
+	"Bilibili_Downloader/internal/tool"
+	"Bilibili_Downloader/pkg/httpclient"
 	"encoding/json"
 	"fmt"
 	"io"

@@ -1,8 +1,8 @@
 package sso
 
 import (
-	"Bilibili_Downloader/cookie"
-	"Bilibili_Downloader/httpclient"
+	"Bilibili_Downloader/pkg/cookie"
+	"Bilibili_Downloader/pkg/httpclient"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"

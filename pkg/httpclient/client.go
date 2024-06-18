@@ -1,7 +1,7 @@
 package httpclient
 
 import (
-	"Bilibili_Downloader/cookie"
+	"Bilibili_Downloader/pkg/cookie"
 	"net/http"
 	"net/http/cookiejar"
 	"net/url"
