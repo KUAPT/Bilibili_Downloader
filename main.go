@@ -70,7 +70,7 @@ func main() {
 	// 处理数据
 	Response, err := internal.ProcessResponse(data, 0)
 	if err != nil {
-		log.Fatalf("视频信息处理发生错误: %v\n", err)
+		log.Fatalf("处理视频详情时发生错误: %v\n", err)
 		return
 	}
 	videoInfoResponse := Response.(*internal.VideoInfoResponse)
