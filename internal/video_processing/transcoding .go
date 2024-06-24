@@ -78,10 +78,11 @@ func Transcoding(videoName string) {
 	err = cmd.Run()
 	tool.ClearScreen()
 	if err != nil {
+		fmt.Println("\n视频文件转码失败，请携带日志文件(log)联系开发者！")
 		log.Println("ffmpeg运行失败:", err)
 		return
+	} else {
+		fmt.Println("\n视频文件转码成功！")
+		log.Println("视频文件转码成功")
 	}
-
-	fmt.Println("\n视频文件转码成功！")
-	log.Println("视频文件转码成功")
 }
