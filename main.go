@@ -21,7 +21,7 @@ func main() {
 		}
 	}()
 
-	logFile, err := os.OpenFile("internal.log", os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0666)
+	logFile, err := os.OpenFile("debug.log", os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0666)
 	if err != nil {
 		log.Fatalf("无法打开日志文件: %v", err)
 	}
@@ -41,8 +41,7 @@ func main() {
 	}
 
 	//正则对BV号进行基本检查
-	BVcheak := `^BV[1-9A-HJ-NP-Za-km-z]{10}$`
-	cheak, err := regexp.Compile(BVcheak)
+	BVcheak := regexp.MustCompile(`^BV[1-9A-HJ-NP-Za-km-z]{10}$`)
 	var BV_id string
 	for {
 		fmt.Printf("请输入你需要下载视频的BV号：")
@@ -52,7 +51,7 @@ func main() {
 			continue
 		}
 
-		if cheak.MatchString(BV_id) {
+		if BVcheak.MatchString(BV_id) {
 			break
 		} else {
 			tool.ClearScreen()
