@@ -55,7 +55,7 @@ func main() {
 			break
 		} else {
 			tool.ClearScreen()
-			fmt.Println("BV号输入错误，请重试！")
+			fmt.Println("BV号输入错误，请检查格式后重试！")
 		}
 	}
 	VideoInfoUrl := fmt.Sprintf("https://api.bilibili.com/x/web-interface/view?bvid=%s", BV_id)
@@ -70,7 +70,7 @@ func main() {
 	// 处理数据
 	Response, err := internal.ProcessResponse(data, 0)
 	if err != nil {
-		log.Fatalf("处理视频详情时发生错误: %v\n", err)
+		log.Fatalf("处理视频详情发生错误: %v\n", err)
 		return
 	}
 	videoInfoResponse := Response.(*internal.VideoInfoResponse)
@@ -79,13 +79,13 @@ func main() {
 
 	data, err = internal.CatchData(DownloadURL)
 	if err != nil {
-		log.Fatalf("获取下载信息数据错误: %v\n", err)
+		log.Fatalf("获取下载信息数据发生错误: %v\n", err)
 		return
 	}
 
 	newResponse, err := internal.ProcessResponse(data, 1)
 	if err != nil {
-		log.Fatalf("下载信息处理发生错误: %v\n", err)
+		log.Fatalf("处理下载信息发生错误: %v\n", err)
 		return
 	}
 
