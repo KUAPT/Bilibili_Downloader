@@ -18,24 +18,24 @@ categories:
       - 'kind/bug'
   - title: 📝 Documentation updates
     labels:
-      - documentation
+      - 'documentation'
       - 'kind/doc'
   - title: 👻 Maintenance
     labels:
-      - chore
-      - dependencies
+      - 'chore'
+      - 'dependencies'
       - 'kind/chore'
       - 'kind/dep'
   - title: 🚦 Tests
     labels:
-      - test
-      - tests
+      - 'test'
+      - 'tests'
 exclude-labels:
   - reverted
   - no-changelog
   - skip-changelog
   - invalid
-change-template: '* $TITLE (#$NUMBER) @$AUTHOR'
+change-template: '- $TITLE @$AUTHOR (#$NUMBER)'
 template: |
   ## What’s Changed
   $CHANGES
