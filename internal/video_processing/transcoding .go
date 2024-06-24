@@ -50,7 +50,7 @@ func Transcoding(videoName string) {
 	if err := tool.CheckAndCreateDir("./Download"); err != nil {
 		log.Println("视频输出目录检查或创建失败：", err)
 	}
-	outputFile := fmt.Sprintf("./Download/%s.mp4", videoName)
+	outputFile := fmt.Sprintf("./Download/%s.mp4", tool.CheckAndCleanFileName(videoName))
 
 	// 获取所有的cache文件
 	caches, err := filepath.Glob(filepath.Join(inputDir, "*"))
@@ -65,11 +65,14 @@ func Transcoding(videoName string) {
 	}
 
 	// 创建ffmpeg命令
-	cmd := exec.Command(ffmpegPath, "-f", "mp4", "-i", caches[0], "-i", caches[1], "-c:a", "copy", "-c:v", "copy", outputFile)
+	cmd := exec.Command(ffmpegPath, "-f", "mp4", "-i", caches[0], "-i", caches[1], "-c:a", "copy", "-c:v", "copy")
 
 	// 将输出重定向到标准输出和标准错误
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
+
+	//将outputFile作为参数提供而不是直接构建命令，避免可能出现的由于特殊字符导致的错误解释
+	cmd.Args = append(cmd.Args, outputFile)
 
 	// 运行ffmpeg命令
 	err = cmd.Run()

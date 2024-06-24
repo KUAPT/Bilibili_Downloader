@@ -7,6 +7,7 @@ import (
 	"os/exec"
 	"path/filepath"
 	"runtime"
+	"strings"
 )
 
 func CheckAndCreateCacheDir() error {
@@ -90,4 +91,17 @@ func CheckAndCreateDir(dir string) error {
 		fmt.Println("目录已存在:", configDir)
 	}
 	return nil
+}
+
+// CheckAndCleanFileName 检查文件名是否包含不允许的字符，并进行清理
+func CheckAndCleanFileName(fileName string) string {
+	disallowedChars := []string{"\\", "/", ":", "*", "?", "\"", "<", ">", "|"}
+	// 检查文件名中的每个字符
+	for _, char := range disallowedChars {
+		if strings.Contains(fileName, char) {
+			// 替换不允许的字符为下划线
+			fileName = strings.ReplaceAll(fileName, char, "_")
+		}
+	}
+	return fileName
 }
