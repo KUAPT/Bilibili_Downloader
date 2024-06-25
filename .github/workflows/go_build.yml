@@ -10,7 +10,7 @@ jobs:
     strategy:
       matrix:
         goos: [windows] # 需要打包的系统
-        goarch: [amd64] # 需要打包的架构
+        goarch: [X86_64, X86] # 需要打包的架构
 
     steps:
       - uses: actions/checkout@v4.1.7
