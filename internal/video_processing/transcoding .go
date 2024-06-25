@@ -11,12 +11,12 @@ import (
 	"path/filepath"
 )
 
-//go:embed ffmpeg/ffmpeg.exe
+//go:embed ffmpeg/ffmpeg
 var embeddedFFmpeg embed.FS
 
 func extractFFmpeg() (string, error) {
 	// 读取嵌入的ffmpeg二进制文件
-	data, err := embeddedFFmpeg.ReadFile("ffmpeg/ffmpeg.exe")
+	data, err := embeddedFFmpeg.ReadFile("ffmpeg/ffmpeg")
 	if err != nil {
 		return "", err
 	}
