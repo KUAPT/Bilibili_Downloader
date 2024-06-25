@@ -2,6 +2,7 @@ package video_processing
 
 import (
 	"Bilibili_Downloader/internal/tool"
+	"bufio"
 	"embed"
 	"fmt"
 	"log"
@@ -44,6 +45,13 @@ func Transcoding(videoName string) {
 		return
 	}
 	defer os.RemoveAll(filepath.Dir(ffmpegPath))
+
+	fmt.Println("当前FFmpeg释放目录：" + ffmpegPath)
+	fmt.Printf("按Enter键继续执行...")
+	// 创建一个新的读取器
+	reader := bufio.NewReader(os.Stdin)
+	// 读取一个字符
+	_, _ = reader.ReadString('\n')
 
 	// 定义要处理的文件目录和输出的MP4文件名
 	inputDir := "./download_cache"
