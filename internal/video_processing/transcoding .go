@@ -2,7 +2,6 @@ package video_processing
 
 import (
 	"Bilibili_Downloader/internal/tool"
-	"bufio"
 	"embed"
 	"fmt"
 	"log"
@@ -44,14 +43,12 @@ func Transcoding(videoName string) {
 		log.Println("ffmpeg释放错误:", err)
 		return
 	}
-	defer os.RemoveAll(filepath.Dir(ffmpegPath))
-
-	fmt.Println("当前FFmpeg释放目录：" + ffmpegPath)
-	fmt.Printf("按Enter键继续执行...")
-	// 创建一个新的读取器
-	reader := bufio.NewReader(os.Stdin)
-	// 读取一个字符
-	_, _ = reader.ReadString('\n')
+	defer func() {
+		if err := os.RemoveAll(filepath.Dir(ffmpegPath)); err != nil {
+			log.Println("移除临时FFmpeg释放目录失败：", err)
+			fmt.Println("移除FFmpeg释放目录失败，详情见log日志，可手动移除，路径：", ffmpegPath)
+		}
+	}()
 
 	// 定义要处理的文件目录和输出的MP4文件名
 	inputDir := "./download_cache"
@@ -86,11 +83,11 @@ func Transcoding(videoName string) {
 	err = cmd.Run()
 	tool.ClearScreen()
 	if err != nil {
-		fmt.Println("\n视频文件转码失败，请携带日志文件(log)联系开发者！")
 		log.Println("ffmpeg运行失败:", err)
+		fmt.Println("\n视频文件转码失败，请携带日志文件(log)联系开发者！")
 		return
 	} else {
-		fmt.Println("\n视频文件转码成功！")
 		log.Println("视频文件转码成功")
+		fmt.Println("\n视频文件转码成功！")
 	}
 }

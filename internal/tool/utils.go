@@ -51,8 +51,6 @@ func RemoveCacheDir() error {
 	if err := os.RemoveAll(cacheDirPath); err != nil {
 		return fmt.Errorf("移除临时cache目录失败: %v", err)
 	}
-
-	fmt.Println("成功移除cache目录:", cacheDirPath)
 	log.Println("成功移除cache目录:", cacheDirPath)
 	return nil
 }
@@ -62,11 +60,15 @@ func ClearScreen() {
 	case "windows":
 		cmd := exec.Command("cmd", "/c", "cls")
 		cmd.Stdout = os.Stdout
-		cmd.Run()
+		if err := cmd.Run(); err != nil {
+			log.Println("清屏命令执行失败：", err)
+		}
 	case "linux", "darwin":
 		cmd := exec.Command("clear")
 		cmd.Stdout = os.Stdout
-		cmd.Run()
+		if err := cmd.Run(); err != nil {
+			log.Println("清屏命令执行失败：", err)
+		}
 	default:
 		log.Println("无法清屏，不支持的平台！")
 	}
