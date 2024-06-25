@@ -1,11 +1,13 @@
 package sso
 
 import (
+	"Bilibili_Downloader/internal/tool"
 	"Bilibili_Downloader/pkg/cookie"
 	"Bilibili_Downloader/pkg/httpclient"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
+	"log"
 	"net/http"
 	"net/http/cookiejar"
 	"net/url"
@@ -116,7 +118,9 @@ func HandleQRCodeLogin() error {
 		case 86090: // 已扫描未确认
 			fmt.Println("二维码已扫描，等待确认")
 		case 0: // 登录成功
+			tool.ClearScreen()
 			fmt.Println("登录成功")
+			log.Println("登录成功")
 			cookie.StoreCookies(cookies)
 			return nil
 		default:

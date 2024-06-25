@@ -32,12 +32,16 @@ func CatchData(Url string) ([]byte, error) {
 	if err != nil {
 		return nil, err
 	}
-	defer resp.Body.Close()
+	defer func() {
+		if err := resp.Body.Close(); err != nil {
+			log.Println("Close resp.Body失败:", err)
+		}
+	}()
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, fmt.Errorf("获取 URL 失败，状态码: %d", resp.StatusCode)
 	}
-	fmt.Printf("响应成功，状态码：%v\n", resp.StatusCode)
+	log.Printf("请求响应成功，状态码：%v\n", resp.StatusCode)
 
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
@@ -50,26 +54,12 @@ func CatchData(Url string) ([]byte, error) {
 func DownloadFile(urlVideo string, urlAudio string, filepath string) error {
 	var filepath1, filepath2 string
 
-	/*// 使用正则表达式提取文件扩展名
-	re := regexp.MustCompile(`\.([a-zA-Z0-9]+)$`)
-	match1 := re.FindStringSubmatch(path.Base(urlVideo))
-	match2 := re.FindStringSubmatch(path.Base(urlAudio))
-	// 提取到的文件扩展名
-	var videoExtension, audioExtension string
-	if len(match1) > 1 {
-		videoExtension = match1[1]
-	}
-	if len(match2) > 1 {
-		audioExtension = match2[1]
-	}*/
-
 	if filepath == "" {
 		if err := tool.CheckAndCreateCacheDir(); err != nil {
 			fmt.Println("检查并创建临时下载目录失败")
 		}
-		// 使用提取的文件名和扩展名创建缓存路径
-		filepath1 = "./download_cache/audio_cache" //+ audioExtension
-		filepath2 = "./download_cache/video_cache" //+ videoExtension
+		filepath1 = "./download_cache/audio_cache"
+		filepath2 = "./download_cache/video_cache"
 	} else {
 		// 检查字符串末尾是否已经有斜杠
 		if !strings.HasSuffix(filepath, "/") {
@@ -77,8 +67,8 @@ func DownloadFile(urlVideo string, urlAudio string, filepath string) error {
 			filepath += "/"
 		}
 		// 如果指定了文件路径，则在文件路径后添加适当的扩展名
-		filepath1 = filepath + "audio_cache" //+ audioExtension
-		filepath2 = filepath + "video_cache" //+ videoExtension
+		filepath1 = filepath + "audio_cache"
+		filepath2 = filepath + "video_cache"
 	}
 
 	//client := &http.Client{}
@@ -95,13 +85,11 @@ func DownloadFile(urlVideo string, urlAudio string, filepath string) error {
 	// 设置自定义请求头
 	req1.Header.Set("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36 Edg/126.0.0.0")
 	req1.Header.Set("Accept", "*/*")
-	//req1.Header.Set("Connection", "keep-alive")
 	req1.Header.Set("Referer", "https://www.bilibili.com/vedio")
 	req1.Header.Set("Origin", "https://www.bilibili.com")
 	// 设置自定义请求头
 	req2.Header.Set("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36 Edg/126.0.0.0")
 	req2.Header.Set("Accept", "*/*")
-	//req2.Header.Set("Connection", "keep-alive")
 	req2.Header.Set("Referer", "https://www.bilibili.com/vedio")
 	req2.Header.Set("Origin", "https://www.bilibili.com")
 
@@ -113,7 +101,14 @@ func DownloadFile(urlVideo string, urlAudio string, filepath string) error {
 	if err != nil {
 		return err
 	}
-	defer resp1.Body.Close()
+	defer func() {
+		if err := resp1.Body.Close(); err != nil {
+			log.Println("Close resp1.body失败：", err)
+		}
+		if err := resp2.Body.Close(); err != nil {
+			log.Println("Close resp2.body失败：", err)
+		}
+	}()
 
 	fmt.Println("发送下载请求")
 	// 检查HTTP响应状态码
@@ -132,7 +127,11 @@ func DownloadFile(urlVideo string, urlAudio string, filepath string) error {
 	if err != nil {
 		return err
 	}
-	defer out1.Close()
+	defer func() {
+		if err := out1.Close(); err != nil {
+			log.Println("Close out1文件失败：", err)
+		}
+	}()
 
 	// 将HTTP响应体内容写入文件
 	_, err = io.Copy(out1, resp1.Body)
@@ -145,7 +144,11 @@ func DownloadFile(urlVideo string, urlAudio string, filepath string) error {
 	if err != nil {
 		return err
 	}
-	defer out2.Close()
+	defer func() {
+		if err := out2.Close(); err != nil {
+			log.Println("Close out2文件失败：", err)
+		}
+	}()
 
 	// 将HTTP响应体内容写入文件
 	_, err = io.Copy(out2, resp2.Body)
@@ -154,7 +157,7 @@ func DownloadFile(urlVideo string, urlAudio string, filepath string) error {
 	}
 
 	tool.ClearScreen()
-	fmt.Println("下载完成！")
+	fmt.Println("下载完毕！")
 	log.Println("视频下载成功")
 	return nil
 }
