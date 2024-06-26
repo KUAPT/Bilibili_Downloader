@@ -2,6 +2,8 @@ package tool
 
 import (
 	"fmt"
+	"github.com/cheggaaa/pb/v3"
+	"io"
 	"log"
 	"os"
 	"os/exec"
@@ -106,4 +108,10 @@ func CheckAndCleanFileName(fileName string) string {
 		}
 	}
 	return fileName
+}
+
+func DownloadAndTrackProgress(src io.Reader, dst io.Writer, bar *pb.ProgressBar) error {
+	reader := bar.NewProxyReader(io.TeeReader(src, dst))
+	_, err := io.Copy(io.Discard, reader)
+	return err
 }
