@@ -5,6 +5,7 @@ import (
 	"Bilibili_Downloader/pkg/httpclient"
 	"encoding/json"
 	"fmt"
+	"github.com/cheggaaa/pb/v3"
 	"io"
 	"log"
 	"net/http"
@@ -56,6 +57,7 @@ func DownloadFile(urlVideo string, urlAudio string, filepath string) error {
 
 	if filepath == "" {
 		if err := tool.CheckAndCreateCacheDir(); err != nil {
+			log.Println("检查并创建临时下载目录失败", err)
 			fmt.Println("检查并创建临时下载目录失败")
 		}
 		filepath1 = "./download_cache/audio_cache"
@@ -133,12 +135,6 @@ func DownloadFile(urlVideo string, urlAudio string, filepath string) error {
 		}
 	}()
 
-	// 将HTTP响应体内容写入文件
-	_, err = io.Copy(out1, resp1.Body)
-	if err != nil {
-		return err
-	}
-
 	// 创建文件
 	out2, err := os.Create(filepath2)
 	if err != nil {
@@ -150,11 +146,19 @@ func DownloadFile(urlVideo string, urlAudio string, filepath string) error {
 		}
 	}()
 
-	// 将HTTP响应体内容写入文件
-	_, err = io.Copy(out2, resp2.Body)
+	totalSize := resp1.ContentLength + resp2.ContentLength
+	bar := pb.StartNew(int(totalSize))
+	bar.Set(pb.SIBytesPrefix, true)
+
+	err = tool.DownloadAndTrackProgress(resp1.Body, out1, bar)
 	if err != nil {
 		return err
 	}
+	err = tool.DownloadAndTrackProgress(resp2.Body, out2, bar)
+	if err != nil {
+		return err
+	}
+	bar.Finish()
 
 	tool.ClearScreen()
 	fmt.Println("下载完毕！")
