@@ -36,7 +36,7 @@ func extractFFmpeg() (string, error) {
 	return ffmpegPath, nil
 }
 
-func Transcoding(videoName string) {
+func Transcoding(videoName string, definition string) {
 	// 提取ffmpeg
 	ffmpegPath, err := extractFFmpeg()
 	if err != nil {
@@ -55,7 +55,7 @@ func Transcoding(videoName string) {
 	if err := tool.CheckAndCreateDir("./Download"); err != nil {
 		log.Println("视频输出目录检查或创建失败：", err)
 	}
-	outputFile := fmt.Sprintf("./Download/%s.mp4", tool.CheckAndCleanFileName(videoName))
+	outputFile := fmt.Sprintf("./Download/%s.mp4", tool.CheckAndCleanFileName(fmt.Sprintf("%s(%s)", videoName, definition)))
 
 	// 获取所有的cache文件
 	caches, err := filepath.Glob(filepath.Join(inputDir, "*"))

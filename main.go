@@ -93,7 +93,7 @@ func main() {
 	}
 	videoInfoResponse := Response.(*internal.VideoInfoResponse)
 
-	DownloadURL := fmt.Sprintf("https://api.bilibili.com/x/player/wbi/playurl?bvid=%s&cid=%d&fnval=80&fnver=0&fourk=1&qn=0", videoInfoResponse.Data.Bvid, videoInfoResponse.Data.Cid)
+	DownloadURL := fmt.Sprintf("https://api.bilibili.com/x/player/wbi/playurl?bvid=%s&cid=%d&fnval=4048", videoInfoResponse.Data.Bvid, videoInfoResponse.Data.Cid)
 
 	data, err = internal.CatchData(DownloadURL)
 	if err != nil {
@@ -111,11 +111,69 @@ func main() {
 
 	downloadInfoResponse := newResponse.(*internal.DownloadInfoResponse)
 
-	if err := internal.DownloadFile(downloadInfoResponse.Data.Dash.Video[0].BackupURL[0], downloadInfoResponse.Data.Dash.Audio[0].BackupURL[0], ""); err != nil {
+	definition := make(map[int]string, 10)
+	for i := 0; i < len(downloadInfoResponse.Data.AcceptDescription); i++ {
+		definition[downloadInfoResponse.Data.AcceptQuality[i]] = downloadInfoResponse.Data.AcceptDescription[i]
+	}
+
+	effectiveDefinition := make([]int, 0, 10)
+	effectiveDefinitionMap := make(map[int]bool)
+	for i := range downloadInfoResponse.Data.Dash.Video {
+		id := downloadInfoResponse.Data.Dash.Video[i].ID
+		if !effectiveDefinitionMap[id] {
+			effectiveDefinition = append(effectiveDefinition, id)
+			effectiveDefinitionMap[id] = true
+		}
+	}
+
+	var choose int
+	for true {
+		fmt.Println("请选择想要下载的分辨率：")
+		for i := range effectiveDefinition {
+			fmt.Println(i+1, definition[effectiveDefinition[i]])
+		}
+		fmt.Printf("请输入分辨率前的序号(单个数字)：")
+		if _, err := fmt.Scanf("%d", &choose); err != nil {
+			tool.ClearScreen()
+			log.Println("读取输入发生错误")
+			fmt.Println("读取输入发生错误,请检查输入格式后重试，若问题依旧，请携带日志log文件向开发者反馈！")
+			continue
+		}
+		if choose < 1 || choose > len(effectiveDefinition) {
+			tool.ClearScreen()
+			fmt.Println("输入错误，请检查输入后重试！")
+			continue
+		}
+		choose -= 1
+		break
+	}
+
+	var videoCode int
+	for i := range downloadInfoResponse.Data.Dash.Video {
+		if downloadInfoResponse.Data.Dash.Video[i].ID == effectiveDefinition[choose] {
+			videoCode = i
+		}
+	}
+
+	if err := internal.DownloadFile(downloadInfoResponse.Data.Dash.Video[videoCode].BackupURL[0], downloadInfoResponse.Data.Dash.Audio[0].BackupURL[0], ""); err != nil {
 		log.Printf("请求下载失败：%s\n", err)
 		fmt.Println("请求下载失败，请检查网络连接或前往log文件查看详情.")
 	}
 
+	resolutions := map[int]string{
+		6:   "240P",
+		16:  "360P",
+		32:  "480P",
+		64:  "720P",
+		74:  "720P60",
+		80:  "1080P",
+		112: "1080P+",
+		116: "1080P60",
+		120: "4K",
+		125: "HDR",
+		126: "杜比视界",
+		127: "8K超高清",
+	}
 	fmt.Println("开始视频转码：\n")
-	video_processing.Transcoding(videoInfoResponse.Data.Title)
+	video_processing.Transcoding(videoInfoResponse.Data.Title, resolutions[effectiveDefinition[choose]])
 }
