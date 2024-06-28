@@ -1,4 +1,4 @@
-package internal
+package toolkit
 
 type VideoInfoResponse struct {
 	Data VideoData `json:"data"`

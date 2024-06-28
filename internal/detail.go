@@ -1,7 +1,7 @@
 package internal
 
 import (
-	"Bilibili_Downloader/internal/tool"
+	"Bilibili_Downloader/internal/toolkit"
 	"Bilibili_Downloader/pkg/httpclient"
 	"encoding/json"
 	"fmt"
@@ -56,7 +56,7 @@ func DownloadFile(urlVideo string, urlAudio string, filepath string) error {
 	var filepath1, filepath2 string
 
 	if filepath == "" {
-		if err := tool.CheckAndCreateCacheDir(); err != nil {
+		if err := toolkit.CheckAndCreateCacheDir(); err != nil {
 			log.Println("检查并创建临时下载目录失败", err)
 			fmt.Println("检查并创建临时下载目录失败")
 		}
@@ -150,17 +150,17 @@ func DownloadFile(urlVideo string, urlAudio string, filepath string) error {
 	bar := pb.StartNew(int(totalSize))
 	bar.Set(pb.SIBytesPrefix, true)
 
-	err = tool.DownloadAndTrackProgress(resp1.Body, out1, bar)
+	err = toolkit.DownloadAndTrackProgress(resp1.Body, out1, bar)
 	if err != nil {
 		return err
 	}
-	err = tool.DownloadAndTrackProgress(resp2.Body, out2, bar)
+	err = toolkit.DownloadAndTrackProgress(resp2.Body, out2, bar)
 	if err != nil {
 		return err
 	}
 	bar.Finish()
 
-	tool.ClearScreen()
+	toolkit.ClearScreen()
 	fmt.Println("下载完毕！")
 	log.Println("视频下载成功")
 	return nil
@@ -170,7 +170,7 @@ func DownloadFile(urlVideo string, urlAudio string, filepath string) error {
 func ProcessResponse(data []byte, flag int) (interface{}, error) {
 	var err error
 	if flag == 0 {
-		var response VideoInfoResponse
+		var response toolkit.VideoInfoResponse
 		err = json.Unmarshal(data, &response)
 		if err != nil {
 			return nil, fmt.Errorf("视频信息解组失败: %w", err)
@@ -179,7 +179,7 @@ func ProcessResponse(data []byte, flag int) (interface{}, error) {
 		log.Println("视频信息数据解组正常")
 		return &response, nil
 	} else if flag == 1 {
-		var response DownloadInfoResponse
+		var response toolkit.DownloadInfoResponse
 		err = json.Unmarshal(data, &response)
 		if err != nil {
 			return nil, fmt.Errorf("下载信息解组失败: %w", err)
