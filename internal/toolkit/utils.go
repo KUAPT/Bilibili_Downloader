@@ -158,7 +158,7 @@ func ObtainUserResolutionSelection(downloadInfoResponse *DownloadInfoResponse) (
 
 	var choose int
 	for true {
-		fmt.Println("请选择想要下载的分辨率：")
+		fmt.Println("\n请选择想要下载的分辨率：(ps:此处仅显示当前登录账号有权获取的所有分辨率选项)")
 		for i := range effectiveDefinition {
 			fmt.Println(i+1, definition[effectiveDefinition[i]])
 		}

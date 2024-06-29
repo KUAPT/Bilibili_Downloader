@@ -80,7 +80,15 @@ func main() {
 			fmt.Println("视频详情数据处理发生错误，请携带log文件向开发者反馈！")
 			return
 		}
-		videoInfoResponse := Response.(*toolkit.VideoInfoResponse)
+		videoInfoResponse, ok := Response.(*toolkit.VideoInfoResponse)
+		if !ok {
+			log.Println("视频详情数据类型断言失败")
+			fmt.Println("程序运行发生异常，请携带log日志文件联系开发者！")
+			break
+		}
+
+		//打印视频详细信息并进行确认
+		internal.ConfirmVideoExplanation(videoInfoResponse)
 
 		//请求视频取流地址
 		DownloadURL := fmt.Sprintf("https://api.bilibili.com/x/player/wbi/playurl?bvid=%s&cid=%d&fnval=4048", videoInfoResponse.Data.Bvid, videoInfoResponse.Data.Cid)
