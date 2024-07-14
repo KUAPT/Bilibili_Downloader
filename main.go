@@ -109,18 +109,23 @@ func main() {
 		downloadInfoResponse := newResponse.(*toolkit.DownloadInfoResponse)
 
 		//处理用户选择
-		videoIndex, _, resolutionDescription := toolkit.ObtainUserResolutionSelection(downloadInfoResponse)
+		if len(downloadInfoResponse.Data.AcceptDescription) == 0 || downloadInfoResponse.Data.AcceptDescription[0] == `试看` {
+			log.Println("当前账号可能没有观看（下载）该视频的权限，无法获取视频下载地址.")
+			fmt.Println("\n当前账号可能没有观看（下载）该视频的权限，无法获取视频下载地址.")
+		} else {
+			videoIndex, _, resolutionDescription := toolkit.ObtainUserResolutionSelection(downloadInfoResponse)
 
-		//请求视频下载
-		if err := internal.DownloadFile(downloadInfoResponse.Data.Dash.Video[videoIndex].BackupURL[0], downloadInfoResponse.Data.Dash.Audio[0].BackupURL[0], ""); err != nil {
-			log.Printf("请求下载失败：%s\n", err)
-			fmt.Println("请求下载失败，请检查网络连接或前往log文件查看详情.")
+			//请求视频下载
+			if err := internal.DownloadFile(downloadInfoResponse.Data.Dash.Video[videoIndex].BackupURL[0], downloadInfoResponse.Data.Dash.Audio[0].BackupURL[0], ""); err != nil {
+				log.Printf("请求下载失败：%s\n", err)
+				fmt.Println("请求下载失败，请检查网络连接或前往log文件查看详情.")
+			}
+
+			//视频音频混流转码
+			fmt.Println("开始视频转码：\n")
+			video_processing.Transcoding(videoInfoResponse.Data.Title, resolutionDescription)
+
 		}
-
-		//视频音频混流转码
-		fmt.Println("开始视频转码：\n")
-		video_processing.Transcoding(videoInfoResponse.Data.Title, resolutionDescription)
-
 		if isContinue := toolkit.IsWantToContinueDownloading(); isContinue {
 			continue
 		} else {
