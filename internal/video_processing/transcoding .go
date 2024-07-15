@@ -88,6 +88,6 @@ func Transcoding(videoName string, definition string) {
 		return
 	} else {
 		log.Println("视频文件转码成功")
-		fmt.Println("\n视频文件转码成功！")
+		fmt.Println("视频文件转码成功！")
 	}
 }

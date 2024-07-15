@@ -11,6 +11,7 @@ import (
 	"path/filepath"
 	"regexp"
 	"runtime"
+	"strconv"
 	"strings"
 )
 
@@ -140,7 +141,7 @@ func CatchAndCheckBVid() string {
 	return BVid
 }
 
-func ObtainUserResolutionSelection(downloadInfoResponse *DownloadInfoResponse) (int, int, string) {
+func ObtainUserResolutionSelection(Default int64, title string, downloadInfoResponse *DownloadInfoResponse) (int, int, string) {
 	definition := make(map[int]string, 10)
 	for i := 0; i < len(downloadInfoResponse.Data.AcceptDescription); i++ {
 		definition[downloadInfoResponse.Data.AcceptQuality[i]] = downloadInfoResponse.Data.AcceptDescription[i]
@@ -157,26 +158,33 @@ func ObtainUserResolutionSelection(downloadInfoResponse *DownloadInfoResponse) (
 	}
 
 	var choose int
-	for true {
-		fmt.Println("\n请选择想要下载的分辨率：(ps:此处仅显示当前登录账号有权获取的所有分辨率选项)")
-		for i := range effectiveDefinition {
-			fmt.Println(i+1, definition[effectiveDefinition[i]])
+	if Default != 1 {
+		for true {
+			fmt.Println("\n当前下载的视频为：", title)
+			fmt.Println("\n请选择想要下载的分辨率：(ps:此处仅显示当前登录账号有权获取的所有分辨率选项)")
+			for i := range effectiveDefinition {
+				fmt.Println(i+1, definition[effectiveDefinition[i]])
+			}
+			fmt.Printf("请输入分辨率前的序号(单个数字)：")
+			if _, err := fmt.Scanln(&choose); err != nil {
+				ClearScreen()
+				log.Println("读取输入发生错误")
+				fmt.Println("读取输入发生错误,请检查输入格式后重试，若问题依旧，请携带日志log文件向开发者反馈！")
+				continue
+			}
+			if choose < 1 || choose > len(effectiveDefinition) {
+				ClearScreen()
+				fmt.Println("输入错误，请检查输入后重试！")
+				continue
+			}
+			choose -= 1
+			break
 		}
-		fmt.Printf("请输入分辨率前的序号(单个数字)：")
-		if _, err := fmt.Scanln(&choose); err != nil {
-			ClearScreen()
-			log.Println("读取输入发生错误")
-			fmt.Println("读取输入发生错误,请检查输入格式后重试，若问题依旧，请携带日志log文件向开发者反馈！")
-			continue
-		}
-		if choose < 1 || choose > len(effectiveDefinition) {
-			ClearScreen()
-			fmt.Println("输入错误，请检查输入后重试！")
-			continue
-		}
-		choose -= 1
-		break
+	} else {
+		fmt.Println("当前下载的视频为：", title)
+		choose = 0
 	}
+
 	var videoIndex int
 	for i := range downloadInfoResponse.Data.Dash.Video {
 		if downloadInfoResponse.Data.Dash.Video[i].ID == effectiveDefinition[choose] {
@@ -204,11 +212,10 @@ func ObtainUserResolutionSelection(downloadInfoResponse *DownloadInfoResponse) (
 	return videoIndex, videoCode, resolutionDescription
 }
 
-func IsWantToContinueDownloading() bool {
+func YesOrNo() bool {
 	reader := bufio.NewReader(os.Stdin)
 	var isContinue rune
 	for true {
-		fmt.Printf("是否继续下载其他视频？(y/n):")
 		if _, err := fmt.Scanf("%c", &isContinue); err != nil {
 			_, _ = reader.ReadString('\n')
 			log.Println("读取输入发生错误", err)
@@ -217,7 +224,6 @@ func IsWantToContinueDownloading() bool {
 		}
 		if isContinue != 'y' && isContinue != 'Y' && isContinue != 'n' && isContinue != 'N' {
 			_, _ = reader.ReadString('\n')
-			ClearScreen()
 			fmt.Println("输入错误，请检查输入(y/n)[不区分大小写]！")
 			continue
 		}
@@ -225,9 +231,71 @@ func IsWantToContinueDownloading() bool {
 		break
 	}
 	if isContinue == 'y' || isContinue == 'Y' {
-		ClearScreen()
 		return true
 	} else {
 		return false
 	}
+}
+
+func GetMaps(info *VideoInfoResponse, kind int64) map[string]map[string]int64 {
+	reader := bufio.NewReader(os.Stdin)
+	fmt.Println("Tip：若需下载所有分P，可直接输入序号0")
+	fmt.Printf("请输入用逗号分隔的整数序号（支持中英逗号）：")
+
+	input, _ := reader.ReadString('\n')
+	input = strings.TrimSpace(input)
+	cleanedInput := strings.ReplaceAll(input, "，", ",")
+
+	parts := strings.Split(cleanedInput, ",")
+
+	if kind == 1 {
+		outerMap := make(map[string]map[string]int64, len(info.Data.Ugc_season.Sections[0].Episodes))
+
+		for _, part := range parts {
+			// 移除可能的空格
+			part = strings.TrimSpace(part)
+			if num, err := strconv.Atoi(part); err == nil && num == 0 {
+				outerMap = make(map[string]map[string]int64, len(info.Data.Ugc_season.Sections[0].Episodes))
+				for i := 0; i < len(info.Data.Ugc_season.Sections[0].Episodes); i++ {
+					innerMap := make(map[string]int64, 1)
+					innerMap[info.Data.Ugc_season.Sections[0].Episodes[i].Bvid] = info.Data.Ugc_season.Sections[0].Episodes[i].Page.Cid
+					outerMap[info.Data.Ugc_season.Sections[0].Episodes[i].Title] = innerMap
+				}
+			} else if num, err := strconv.Atoi(part); err == nil {
+				innerMap := make(map[string]int64, 1)
+				innerMap[info.Data.Ugc_season.Sections[0].Episodes[num-1].Bvid] = info.Data.Ugc_season.Sections[0].Episodes[num-1].Page.Cid
+				outerMap[info.Data.Ugc_season.Sections[0].Episodes[num-1].Title] = innerMap
+			} else {
+				fmt.Printf("跳过无效输入： %s\n", part)
+			}
+		}
+		return outerMap
+
+	} else if kind == 2 {
+		outerMap := make(map[string]map[string]int64, len(info.Data.Pages))
+
+		for _, part := range parts {
+			// 移除可能的空格
+			part = strings.TrimSpace(part)
+			if num, err := strconv.Atoi(part); err == nil && num == 0 {
+				outerMap = make(map[string]map[string]int64, len(info.Data.Pages))
+				for i := 0; i < len(info.Data.Pages); i++ {
+					innerMap := make(map[string]int64, 1)
+					innerMap[info.Data.Bvid] = info.Data.Pages[i].Cid
+					outerMap[info.Data.Pages[i].Part] = innerMap
+				}
+			} else if num, err := strconv.Atoi(part); err == nil {
+				innerMap := make(map[string]int64, 1)
+				innerMap[info.Data.Bvid] = info.Data.Pages[num-1].Cid
+				outerMap[info.Data.Pages[num-1].Part] = innerMap
+			} else {
+				fmt.Printf("跳过无效输入： %s\n", part)
+			}
+		}
+		return outerMap
+	} else {
+		fmt.Println("程序运行异常，请携带log日志联系开发者！")
+		log.Println("打印分P信息异常，不支持的kind值")
+	}
+	return nil
 }

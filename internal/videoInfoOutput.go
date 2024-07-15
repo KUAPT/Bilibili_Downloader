@@ -30,3 +30,23 @@ func ConfirmVideoExplanation(response *toolkit.VideoInfoResponse) {
 	// 直接在控制台输出数据
 	responseToConsoleOutput(response)
 }
+
+func PrintDiversityInformationPart1(info *toolkit.VideoInfoResponse) {
+	fmt.Println("\n--------------------------------------------------")
+	fmt.Println("分    P    列    表")
+	fmt.Println("--------------------------------------------------")
+	for i := range info.Data.Ugc_season.Sections[0].Episodes {
+		fmt.Printf("%d.%s\n", i+1, info.Data.Ugc_season.Sections[0].Episodes[i].Title)
+	}
+	fmt.Println("--------------------------------------------------")
+}
+
+func PrintDiversityInformationPart2(info *toolkit.VideoInfoResponse) {
+	fmt.Println("\n--------------------------------------------------")
+	fmt.Println("分    P    列    表")
+	fmt.Println("--------------------------------------------------")
+	for i := range info.Data.Pages {
+		fmt.Printf("%d.%s\n", i+1, info.Data.Pages[i].Part)
+	}
+	fmt.Println("--------------------------------------------------")
+}
