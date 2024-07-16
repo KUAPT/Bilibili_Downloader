@@ -159,7 +159,7 @@ func ObtainUserResolutionSelection(Default int64, title string, downloadInfoResp
 
 	var choose int
 	if Default != 1 {
-		for true {
+		for {
 			fmt.Println("\n当前下载的视频为：", title)
 			fmt.Println("\n请选择想要下载的分辨率：(ps:此处仅显示当前登录账号有权获取的所有分辨率选项)")
 			for i := range effectiveDefinition {
@@ -215,7 +215,7 @@ func ObtainUserResolutionSelection(Default int64, title string, downloadInfoResp
 func YesOrNo() bool {
 	reader := bufio.NewReader(os.Stdin)
 	var isContinue rune
-	for true {
+	for {
 		if _, err := fmt.Scanf("%c", &isContinue); err != nil {
 			_, _ = reader.ReadString('\n')
 			log.Println("读取输入发生错误", err)
@@ -249,22 +249,22 @@ func GetMaps(info *VideoInfoResponse, kind int64) map[string]map[string]int64 {
 	parts := strings.Split(cleanedInput, ",")
 
 	if kind == 1 {
-		outerMap := make(map[string]map[string]int64, len(info.Data.Ugc_season.Sections[0].Episodes))
+		outerMap := make(map[string]map[string]int64, len(info.Data.UgcSeason.Sections[0].Episodes))
 
 		for _, part := range parts {
 			// 移除可能的空格
 			part = strings.TrimSpace(part)
 			if num, err := strconv.Atoi(part); err == nil && num == 0 {
-				outerMap = make(map[string]map[string]int64, len(info.Data.Ugc_season.Sections[0].Episodes))
-				for i := 0; i < len(info.Data.Ugc_season.Sections[0].Episodes); i++ {
+				outerMap = make(map[string]map[string]int64, len(info.Data.UgcSeason.Sections[0].Episodes))
+				for i := 0; i < len(info.Data.UgcSeason.Sections[0].Episodes); i++ {
 					innerMap := make(map[string]int64, 1)
-					innerMap[info.Data.Ugc_season.Sections[0].Episodes[i].Bvid] = info.Data.Ugc_season.Sections[0].Episodes[i].Page.Cid
-					outerMap[info.Data.Ugc_season.Sections[0].Episodes[i].Title] = innerMap
+					innerMap[info.Data.UgcSeason.Sections[0].Episodes[i].Bvid] = info.Data.UgcSeason.Sections[0].Episodes[i].Page.Cid
+					outerMap[info.Data.UgcSeason.Sections[0].Episodes[i].Title] = innerMap
 				}
 			} else if num, err := strconv.Atoi(part); err == nil {
 				innerMap := make(map[string]int64, 1)
-				innerMap[info.Data.Ugc_season.Sections[0].Episodes[num-1].Bvid] = info.Data.Ugc_season.Sections[0].Episodes[num-1].Page.Cid
-				outerMap[info.Data.Ugc_season.Sections[0].Episodes[num-1].Title] = innerMap
+				innerMap[info.Data.UgcSeason.Sections[0].Episodes[num-1].Bvid] = info.Data.UgcSeason.Sections[0].Episodes[num-1].Page.Cid
+				outerMap[info.Data.UgcSeason.Sections[0].Episodes[num-1].Title] = innerMap
 			} else {
 				fmt.Printf("跳过无效输入： %s\n", part)
 			}

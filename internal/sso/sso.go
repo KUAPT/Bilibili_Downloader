@@ -6,7 +6,7 @@ import (
 	"Bilibili_Downloader/pkg/httpclient"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"log"
 	"net/http"
 	"net/http/cookiejar"
@@ -38,7 +38,7 @@ func RequestQRCode(client *http.Client) (string, string, error) {
 	}
 	defer resp.Body.Close()
 
-	body, err := ioutil.ReadAll(resp.Body)
+	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return "", "", err
 	}
@@ -65,7 +65,7 @@ func PollQRCodeStatus(client *http.Client, token string) (int, []*http.Cookie, e
 	}
 	defer resp.Body.Close()
 
-	body, err := ioutil.ReadAll(resp.Body)
+	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return 0, nil, err
 	}

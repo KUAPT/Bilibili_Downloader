@@ -69,7 +69,7 @@ func main() {
 		//获取视频信息
 		data, err := internal.CatchData(VideoInfoUrl)
 		if err != nil {
-			log.Println("获取视频信息数据错误: %v\n", err)
+			log.Printf("获取视频信息数据错误: %v\n\n", err)
 			fmt.Println("视频信息数据获取异常，请检查网络连接或前往log文件查看详情.")
 			return
 		}
@@ -77,7 +77,7 @@ func main() {
 		//视频信息反序列化
 		Response, err := internal.ProcessResponse(data, 0)
 		if err != nil {
-			log.Println("处理视频详情发生错误: %v\n", err)
+			log.Printf("处理视频详情发生错误: %v\n\n", err)
 			fmt.Println("视频详情数据处理发生错误，请携带log文件向开发者反馈！")
 			return
 		}
@@ -94,7 +94,7 @@ func main() {
 
 		Default := -2
 		var actions map[string]map[string]int64
-		if videoInfoResponse.Data.Ugc_season.Sections != nil || len(videoInfoResponse.Data.Pages) > 1 {
+		if videoInfoResponse.Data.UgcSeason.Sections != nil || len(videoInfoResponse.Data.Pages) > 1 {
 			var part int64
 			//确认是否使用多分P选择/连续下载功能
 			fmt.Printf("检测到视频含有分P，是否使用多分P选择/连续下载功能？(y/n):")
@@ -132,7 +132,7 @@ func main() {
 				DownloadURL := fmt.Sprintf("https://api.bilibili.com/x/player/wbi/playurl?bvid=%s&cid=%d&fnval=4048", bvid, cid)
 				data, err = internal.CatchData(DownloadURL)
 				if err != nil {
-					log.Println("获取下载信息数据发生错误: %v\n", err)
+					log.Printf("获取下载信息数据发生错误: %v\n\n", err)
 					fmt.Println("视频下载信息获取异常，请检查网络连接或前往log文件查看详情.")
 					return
 				}
@@ -140,7 +140,7 @@ func main() {
 				//反序列化视频流信息
 				newResponse, err := internal.ProcessResponse(data, 1)
 				if err != nil {
-					log.Println("处理下载信息发生错误: %v\n", err)
+					log.Printf("处理下载信息发生错误: %v\n\n", err)
 					fmt.Println("视频下载信息处理发生错误，请携带log文件向开发者反馈！")
 					return
 				}
@@ -173,7 +173,7 @@ func main() {
 					}
 
 					//视频音频混流转码
-					fmt.Println("开始视频转码：\n")
+					fmt.Printf("开始视频转码：\n\n")
 					video_processing.Transcoding(title, resolutionDescription)
 					time.Sleep(500 * time.Millisecond)
 				}
