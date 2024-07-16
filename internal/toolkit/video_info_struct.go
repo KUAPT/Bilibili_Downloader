@@ -19,10 +19,10 @@ type VideoData struct {
 	Tname      string                 `json:"tname"`   //分类
 	Videos     int64                  `json:"videos"`  //分P数
 	Pages      []Page                 `json:"pages"`
-	Ugc_season Ugc_season             `json:"ugc_season"`
+	UgcSeason  UgcSeason              `json:"ugc_season"`
 }
 
-type Ugc_season struct {
+type UgcSeason struct {
 	Title    string    `json:"title"`
 	Intro    string    `json:"intro"`
 	Sections []Section `json:"sections"`
