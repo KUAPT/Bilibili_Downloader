@@ -9,7 +9,7 @@ import (
 	"os"
 )
 
-// 存储Cookie
+// StoreCookies 存储Cookie
 func StoreCookies(cookies []*http.Cookie) {
 	if err := toolkit.CheckAndCreateDir("./config"); err != nil {
 		log.Println("视频输出目录检查或创建失败：", err)
@@ -46,7 +46,7 @@ func StoreCookies(cookies []*http.Cookie) {
 	log.Println("Cookies 已保存到:", file.Name())
 }
 
-// 加载之前保存的 cookies
+// LoadCookies 加载之前保存的 cookies
 func LoadCookies() []*http.Cookie {
 	// 读取之前保存的 cookies 文件
 	content, err := os.ReadFile("./config/cookies.json")
