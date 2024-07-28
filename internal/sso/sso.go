@@ -36,7 +36,11 @@ func RequestQRCode(client *http.Client) (string, string, error) {
 	if err != nil {
 		return "", "", err
 	}
-	defer resp.Body.Close()
+	defer func() {
+		if err := resp.Body.Close(); err != nil {
+			log.Println("未成功关闭响应client:", err)
+		}
+	}()
 
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
@@ -63,7 +67,11 @@ func PollQRCodeStatus(client *http.Client, token string) (int, []*http.Cookie, e
 	if err != nil {
 		return 0, nil, err
 	}
-	defer resp.Body.Close()
+	defer func() {
+		if err := resp.Body.Close(); err != nil {
+			log.Println("未成功关闭请求client:", err)
+		}
+	}()
 
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
