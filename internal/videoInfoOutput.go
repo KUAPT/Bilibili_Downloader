@@ -35,8 +35,8 @@ func PrintDiversityInformationPart1(info *toolkit.VideoInfoResponse) {
 	fmt.Println("\n--------------------------------------------------")
 	fmt.Println("分    P    列    表")
 	fmt.Println("--------------------------------------------------")
-	for i := range info.Data.Ugc_season.Sections[0].Episodes {
-		fmt.Printf("%d.%s\n", i+1, info.Data.Ugc_season.Sections[0].Episodes[i].Title)
+	for i := range info.Data.UgcSeason.Sections[0].Episodes {
+		fmt.Printf("%d.%s\n", i+1, info.Data.UgcSeason.Sections[0].Episodes[i].Title)
 	}
 	fmt.Println("--------------------------------------------------")
 }
