@@ -26,7 +26,9 @@ func checkForUpdate(VersionUpdateApi string, currentVersion string) (string, str
 	}()
 
 	if resp.StatusCode != 200 {
-		return "", "", fmt.Errorf("failed to get latest release: %s", resp.Status)
+		log.Printf("failed to get latest release: %s\n", resp.Status)
+		fmt.Printf("检查更新失败，请检查网络环境\n\n")
+		return "?", "", nil
 	}
 
 	var result map[string]interface{}
@@ -129,7 +131,12 @@ func CheckAndUpdate() (int, string) {
 		return -1, ""
 	}
 
-	if downloadURL != "" {
+	if downloadURL == "" {
+		fmt.Printf("当前已是最新版本！\n\n")
+		return 0, ""
+	} else if downloadURL == "?" {
+		return 0, ""
+	} else {
 		fmt.Printf("发现新版本，当前版本: %s，最新版本: %s\n", currentConfig.CurrentVersion, latestVersion)
 		fmt.Print("是否下载更新? (y/n): ")
 		if toolkit.YesOrNo() {
@@ -147,9 +154,6 @@ func CheckAndUpdate() (int, string) {
 			fmt.Printf("跳过更新\n\n")
 			return 0, ""
 		}
-	} else {
-		fmt.Printf("当前已是最新版本！\n\n")
-		return 0, ""
 	}
 	return -1, ""
 }
