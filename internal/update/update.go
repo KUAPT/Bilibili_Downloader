@@ -141,11 +141,11 @@ func CheckAndUpdate() (int, string) {
 				return 1, newProgramName
 			}
 		} else {
-			fmt.Println("跳过更新。")
+			fmt.Printf("跳过更新\n\n")
 			return 0, ""
 		}
 	} else {
-		fmt.Println("当前已是最新版本！")
+		fmt.Printf("当前已是最新版本！\n\n")
 		return 0, ""
 	}
 	return -1, ""
