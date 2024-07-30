@@ -4,12 +4,14 @@ import (
 	"Bilibili_Downloader/internal"
 	"Bilibili_Downloader/internal/sso"
 	"Bilibili_Downloader/internal/toolkit"
+	"Bilibili_Downloader/internal/update"
 	"Bilibili_Downloader/internal/video_processing"
 	"Bilibili_Downloader/pkg/httpclient"
 	"bufio"
 	"fmt"
 	"log"
 	"os"
+	"os/exec"
 	"time"
 )
 
@@ -58,6 +60,24 @@ func main() {
 			fmt.Println("处理二维码登录失败:", err)
 			return
 		}
+	}
+
+	//检查更新
+	if check, newProgramName := update.CheckAndUpdate(); check == -1 {
+		fmt.Println("程序运行异常，请携带log日志联系开发者反馈")
+		return
+	} else if check == 1 {
+		// 创建一个临时程序来替换老版本
+		newProgram := fmt.Sprintf(".\\%s", newProgramName)
+		cmd := exec.Command("cmd.exe", "/K", "start", "", newProgram, "--update", os.Args[0])
+		if err := cmd.Start(); err != nil {
+			log.Println("启动新程序失败:", err)
+			fmt.Println("启动更新程序失败")
+			return
+		}
+		os.Exit(0)
+	} else {
+		log.Println("完成检查更新过程")
 	}
 
 	//主逻辑循环

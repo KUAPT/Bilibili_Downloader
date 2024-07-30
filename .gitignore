@@ -20,7 +20,7 @@
 *.out
 
 # Dependency directories (remove the comment below to include it)
-config/
+./config/
 
 # Go workspace file
 go.work

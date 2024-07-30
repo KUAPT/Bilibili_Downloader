@@ -3,6 +3,7 @@ module Bilibili_Downloader
 go 1.21
 
 require (
+	github.com/Masterminds/semver/v3 v3.2.1
 	github.com/cheggaaa/pb/v3 v3.1.5
 	github.com/skip2/go-qrcode v0.0.0-20200617195104-da1b6568686e
 )

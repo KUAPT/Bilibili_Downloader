@@ -1,4 +1,4 @@
-package cookie
+package config
 
 import (
 	"Bilibili_Downloader/internal/toolkit"
