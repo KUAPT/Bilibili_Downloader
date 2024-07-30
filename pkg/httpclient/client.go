@@ -1,7 +1,7 @@
 package httpclient
 
 import (
-	"Bilibili_Downloader/pkg/cookie"
+	"Bilibili_Downloader/pkg/config"
 	"net/http"
 	"net/http/cookiejar"
 	"net/url"
@@ -12,14 +12,14 @@ import (
 var client *http.Client
 var once sync.Once
 
-// 初始化函数，创建并配置一个带有 cookiejar 的 http.Client
+// Init 初始化函数，创建并配置一个带有 cookiejar 的 http.Client
 func Init() bool {
 	success := true
 	once.Do(func() {
 		// 加载之前保存的 cookies
-		cookies := cookie.LoadCookies()
+		cookies := config.LoadCookies()
 		if cookies != nil {
-			// 创建一个 cookie jar 并设置 cookies
+			// 创建一个 config jar 并设置 cookies
 			jar, _ := cookiejar.New(nil)
 			URL, _ := url.Parse("https://api.bilibili.com/")
 			jar.SetCookies(URL, cookies)
@@ -39,7 +39,7 @@ func ChangeClinet(newClient *http.Client) {
 	client = newClient
 }
 
-// 获取全局的 http.Client 实例
+// GetClient 获取全局的 http.Client 实例
 func GetClient() *http.Client {
 	return client
 }

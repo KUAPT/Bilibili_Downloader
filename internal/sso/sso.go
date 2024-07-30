@@ -2,7 +2,7 @@ package sso
 
 import (
 	"Bilibili_Downloader/internal/toolkit"
-	"Bilibili_Downloader/pkg/cookie"
+	"Bilibili_Downloader/pkg/config"
 	"Bilibili_Downloader/pkg/httpclient"
 	"encoding/json"
 	"fmt"
@@ -93,10 +93,10 @@ func PollQRCodeStatus(client *http.Client, token string) (int, []*http.Cookie, e
 
 // HandleQRCodeLogin 处理二维码登录流程
 func HandleQRCodeLogin() error {
-	// 创建 cookie jar
+	// 创建 config jar
 	jar, err := cookiejar.New(nil)
 	if err != nil {
-		return fmt.Errorf("创建 cookie jar 失败: %v", err)
+		return fmt.Errorf("创建 config jar 失败: %v", err)
 	}
 	client := &http.Client{Jar: jar}
 	httpclient.ChangeClinet(client)
@@ -129,7 +129,7 @@ func HandleQRCodeLogin() error {
 			toolkit.ClearScreen()
 			fmt.Println("登录成功")
 			log.Println("登录成功")
-			cookie.StoreCookies(cookies)
+			config.StoreCookies(cookies)
 			return nil
 		default:
 			return fmt.Errorf("未知状态码: %d", status)
