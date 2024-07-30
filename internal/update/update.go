@@ -17,7 +17,9 @@ import (
 func checkForUpdate(VersionUpdateApi string, currentVersion string) (string, string, error) {
 	resp, err := http.Get(VersionUpdateApi)
 	if err != nil {
-		return "", "", err
+		log.Printf("failed to get latest release: %s\n", err)
+		fmt.Printf("检查更新失败，请检查网络环境\n\n")
+		return "?", "", nil
 	}
 	defer func() {
 		if err := resp.Body.Close(); err != nil {
@@ -26,9 +28,7 @@ func checkForUpdate(VersionUpdateApi string, currentVersion string) (string, str
 	}()
 
 	if resp.StatusCode != 200 {
-		log.Printf("failed to get latest release: %s\n", resp.Status)
-		fmt.Printf("检查更新失败，请检查网络环境\n\n")
-		return "?", "", nil
+		return "", "", fmt.Errorf("failed to get latest release: %s", resp.Status)
 	}
 
 	var result map[string]interface{}
