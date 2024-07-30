@@ -137,6 +137,9 @@ func CheckAndUpdate() (int, string) {
 				log.Println("更新失败:", err)
 				fmt.Println("更新失败:", err)
 			} else {
+				if err := os.Remove(".\\config\\config.json"); err != nil {
+					log.Println("删除旧config失败")
+				}
 				fmt.Println("更新成功，请重新启动程序！")
 				return 1, newProgramName
 			}
