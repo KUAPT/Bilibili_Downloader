@@ -13,7 +13,7 @@ type Config struct {
 }
 
 // CurrentVersion 当前版本
-const CurrentVersion = `v1.3.2`
+const CurrentVersion = `v1.3.3`
 
 // 配置文件名
 const configFileName = `.\config\config.json`
