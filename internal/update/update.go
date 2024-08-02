@@ -122,6 +122,17 @@ func CheckAndUpdate() (int, string) {
 		fmt.Println("读取配置时发生错误:", err)
 		return -1, ""
 	}
+	if currentConfig.CurrentVersion != config.CurrentVersion {
+		log.Println("内置版本信息与config配置不一致，尝试重建config配置")
+		if err := os.Remove(".\\config\\config.json"); err != nil {
+			log.Println("删除旧config失败")
+		}
+		if err := config.CreateConfig(); err != nil {
+			log.Println("重建config失败：", err)
+			fmt.Println("配置异常，请尝试删除config目录后重启！")
+		}
+		currentConfig.CurrentVersion = config.CurrentVersion
+	}
 
 	fmt.Println("检查更新...")
 	downloadURL, latestVersion, err := checkForUpdate(currentConfig.VersionUpdateApi, currentConfig.CurrentVersion)
