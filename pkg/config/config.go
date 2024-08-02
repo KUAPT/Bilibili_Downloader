@@ -13,13 +13,13 @@ type Config struct {
 }
 
 // CurrentVersion 当前版本
-const CurrentVersion = `v1.3.3`
+const CurrentVersion = `v1.3.4`
 
 // 配置文件名
 const configFileName = `.\config\config.json`
 
-// 创建默认配置文件
-func createConfig() error {
+// CreateConfig 创建默认配置文件
+func CreateConfig() error {
 	config := Config{
 		VersionUpdateApi: "https://api.github.com/repos/KUAPT/Bilibili_Downloader/releases/latest",
 		CurrentVersion:   CurrentVersion,
@@ -45,7 +45,7 @@ func ReadConfig() (Config, error) {
 	if err != nil {
 		if os.IsNotExist(err) {
 			// 如果配置文件不存在，则创建一个默认的配置文件
-			if err := createConfig(); err != nil {
+			if err := CreateConfig(); err != nil {
 				return config, err
 			}
 			// 再次尝试读取
