@@ -8,10 +8,24 @@
 *.so
 *.dylib
 *.mp4
-*.json
 *.log
 *.rar
 *.zip
+
+# Local runtime data (portable app)
+/config/
+/Download/
+/download_cache/
+/update_temp
+/debug.log
+
+# Cookies/config are local-only
+*.json
+
+# Nested vendor repos are not part of this repo
+/ffmpeg-go/
+/ffstatic/
+/gomedia/
 
 # Test binary, built with `go test -c`
 *.test
