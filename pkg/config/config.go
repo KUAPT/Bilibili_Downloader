@@ -1,31 +1,35 @@
 package config
 
 import (
+	"Bilibili_Downloader/internal/paths"
 	"encoding/json"
 	"log"
 	"os"
 )
 
-// Config 结构体用于存储配置信息
 type Config struct {
 	VersionUpdateApi string `json:"VersionUpdateApi"`
 	CurrentVersion   string `json:"CurrentVersion"`
 }
 
-// CurrentVersion 当前版本
 const CurrentVersion = `v1.4.2`
 
-// 配置文件名
-const configFileName = `.\config\config.json`
+func configFilePath() string {
+	return paths.Get().ConfigFilePath()
+}
 
-// CreateConfig 创建默认配置文件
 func CreateConfig() error {
+	p := paths.Get()
+	if err := os.MkdirAll(p.ConfigDir, 0755); err != nil {
+		return err
+	}
+
 	config := Config{
 		VersionUpdateApi: "https://api.github.com/repos/KUAPT/Bilibili_Downloader/releases/latest",
 		CurrentVersion:   CurrentVersion,
 	}
 
-	file, err := os.Create(configFileName)
+	file, err := os.Create(configFilePath())
 	if err != nil {
 		return err
 	}
@@ -38,18 +42,15 @@ func CreateConfig() error {
 	return json.NewEncoder(file).Encode(config)
 }
 
-// ReadConfig 读取配置文件
 func ReadConfig() (Config, error) {
 	var config Config
-	file, err := os.Open(configFileName)
+	file, err := os.Open(configFilePath())
 	if err != nil {
 		if os.IsNotExist(err) {
-			// 如果配置文件不存在，则创建一个默认的配置文件
 			if err := CreateConfig(); err != nil {
 				return config, err
 			}
-			// 再次尝试读取
-			file, err = os.Open(configFileName)
+			file, err = os.Open(configFilePath())
 			if err != nil {
 				return config, err
 			}

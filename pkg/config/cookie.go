@@ -1,7 +1,7 @@
 package config
 
 import (
-	"Bilibili_Downloader/pkg/toolkit"
+	"Bilibili_Downloader/internal/paths"
 	"encoding/json"
 	"fmt"
 	"log"
@@ -9,13 +9,14 @@ import (
 	"os"
 )
 
-// StoreCookies 存储Cookie
 func StoreCookies(cookies []*http.Cookie) {
-	if err := toolkit.CheckAndCreateDir("./config"); err != nil {
-		log.Println("视频输出目录检查或创建失败：", err)
+	p := paths.Get()
+	if err := os.MkdirAll(p.ConfigDir, 0755); err != nil {
+		log.Println("配置目录创建失败：", err)
 	}
-	// 创建文件存储 cookies
-	file, err := os.Create("./config/cookies.json")
+
+	cookiePath := p.CookieFilePath()
+	file, err := os.Create(cookiePath)
 	if err != nil {
 		fmt.Println("创建Cookie文件失败:", err)
 		log.Println("创建Cookie文件失败:", err)
@@ -27,7 +28,6 @@ func StoreCookies(cookies []*http.Cookie) {
 		}
 	}()
 
-	// 将 cookies 转换为 JSON 格式
 	cookiesJSON, err := json.MarshalIndent(cookies, "", "  ")
 	if err != nil {
 		fmt.Println("转换 cookies 到 JSON 失败:", err)
@@ -35,7 +35,6 @@ func StoreCookies(cookies []*http.Cookie) {
 		return
 	}
 
-	// 将 JSON 写入文件
 	if err := os.WriteFile(file.Name(), cookiesJSON, 0644); err != nil {
 		fmt.Println("写入 cookies 文件失败:", err)
 		log.Println("写入 cookies 文件失败:", err)
@@ -46,10 +45,9 @@ func StoreCookies(cookies []*http.Cookie) {
 	log.Println("Cookies 已保存到:", file.Name())
 }
 
-// LoadCookies 加载之前保存的 cookies
 func LoadCookies() []*http.Cookie {
-	// 读取之前保存的 cookies 文件
-	content, err := os.ReadFile("./config/cookies.json")
+	cookiePath := paths.Get().CookieFilePath()
+	content, err := os.ReadFile(cookiePath)
 	if err != nil {
 		fmt.Println("未成功加载已保存的配置文件:", err)
 		log.Println("未成功加载已保存的配置文件:", err)
