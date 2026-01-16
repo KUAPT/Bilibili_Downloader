@@ -2,6 +2,7 @@ package httpclient
 
 import (
 	"Bilibili_Downloader/pkg/config"
+	"context"
 	"fmt"
 	"log"
 	"net/http"
@@ -9,6 +10,10 @@ import (
 	"net/url"
 	"sync"
 	"time"
+)
+
+const (
+	DefaultTimeout = 30 * time.Second
 )
 
 // 定义一个全局的 http.Client 变量
@@ -41,7 +46,8 @@ func Init() bool {
 
 		// 创建HTTP客户端，设置超时
 		client = &http.Client{
-			Jar: jar,
+			Jar:     jar,
+			Timeout: DefaultTimeout,
 		}
 		initialized = true
 	})
@@ -64,10 +70,24 @@ func GetClient() *http.Client {
 		jar, _ := cookiejar.New(nil)
 		client = &http.Client{
 			Jar:     jar,
-			Timeout: 30 * time.Second,
+			Timeout: DefaultTimeout,
 		}
 		log.Println("使用默认HTTP客户端")
 		fmt.Println("警告：未加载Cookie，部分功能可能受限")
 	}
 	return client
+}
+
+// Do 执行HTTP请求，支持 context
+func Do(ctx context.Context, req *http.Request) (*http.Response, error) {
+	return GetClient().Do(req.WithContext(ctx))
+}
+
+// Get 执行GET请求，支持 context
+func Get(ctx context.Context, url string) (*http.Response, error) {
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
+	if err != nil {
+		return nil, err
+	}
+	return GetClient().Do(req)
 }

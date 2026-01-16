@@ -117,7 +117,6 @@ func HandleQRCodeLogin() error {
 		case 86090: // 已扫描未确认
 			fmt.Println("二维码已扫描，等待确认")
 		case 0: // 登录成功
-			toolkit.ClearScreen()
 			fmt.Println("登录成功")
 			log.Println("登录成功")
 			config.StoreCookies(cookies)
